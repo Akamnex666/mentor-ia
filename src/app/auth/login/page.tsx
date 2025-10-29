@@ -14,6 +14,10 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,8 +39,47 @@ export default function LoginPage() {
     }
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setResetLoading(true);
+    setError(null);
+    
+    try {
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: `${window.location.origin}/auth/reset-password`,
+      });
+      
+      if (resetError) {
+        setError(resetError.message);
+        toast.push({ type: "error", message: resetError.message });
+        return;
+      }
+      
+      setResetSent(true);
+      toast.push({ type: "success", message: "Correo de recuperación enviado" });
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setResetLoading(false);
+    }
+  };
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const openForgotPassword = () => {
+    setShowForgotPassword(true);
+    setResetEmail(email); // Pre-fill with the email from login
+    setError(null);
+    setResetSent(false);
+  };
+
+  const closeForgotPassword = () => {
+    setShowForgotPassword(false);
+    setResetEmail("");
+    setError(null);
+    setResetSent(false);
   };
 
   return (
@@ -91,118 +134,250 @@ export default function LoginPage() {
           minHeight: '600px'
         }}>
           <div style={{ padding: '3rem', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-              <div className="hero-badge">
-                <i className="fas fa-sign-in-alt"></i> Acceso seguro
-              </div>
-              <h1 style={{ fontSize: '2rem', fontWeight: '700', marginBottom: '0.5rem', color: '#1f2937' }}>
-                Bienvenido de nuevo a <span className="bright-text">MentorIA</span>
-              </h1>
-              <p style={{ color: '#6b7280' }}>
-                Accede para continuar creando contenido educativo con IA.
-              </p>
-            </div>
-
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              <div>
-                <label style={{ display: 'block', fontWeight: '500', color: '#374151', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
-                  Correo electrónico
-                </label>
-                <div style={{ position: 'relative' }}>
-                  <i className="fas fa-envelope" style={{ 
-                    position: 'absolute', 
-                    left: '1rem', 
-                    top: '50%', 
-                    transform: 'translateY(-50%)', 
-                    color: '#6b7280' 
-                  }}></i>
-                  <input 
-                    type="email" 
-                    value={email} 
-                    onChange={(e) => setEmail(e.target.value)} 
-                    required 
-                    placeholder="tú@ejemplo.com"
-                    className="auth-input"
-                    style={{ paddingLeft: '2.5rem', width: '100%' }}
-                  />
+            
+            {/* Formulario de Login */}
+            {!showForgotPassword ? (
+              <>
+                <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                  <div className="hero-badge">
+                    <i className="fas fa-sign-in-alt"></i> Acceso seguro
+                  </div>
+                  <h1 style={{ fontSize: '2rem', fontWeight: '700', marginBottom: '0.5rem', color: '#1f2937' }}>
+                    Bienvenido de nuevo a <span className="bright-text">MentorIA</span>
+                  </h1>
+                  <p style={{ color: '#6b7280' }}>
+                    Accede para continuar creando contenido educativo con IA.
+                  </p>
                 </div>
-              </div>
 
-              <div>
-                <label style={{ display: 'block', fontWeight: '500', color: '#374151', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
-                  Contraseña
-                </label>
-                <div style={{ position: 'relative' }}>
-                  <i className="fas fa-lock" style={{ 
-                    position: 'absolute', 
-                    left: '1rem', 
-                    top: '50%', 
-                    transform: 'translateY(-50%)', 
-                    color: '#6b7280' 
-                  }}></i>
-                  <input 
-                    type={showPassword ? "text" : "password"}
-                    value={password} 
-                    onChange={(e) => setPassword(e.target.value)} 
-                    required 
-                    placeholder="••••••••"
-                    className="auth-input"
-                    style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem', width: '100%' }}
-                  />
-                  <button
-                    type="button"
-                    onClick={togglePasswordVisibility}
-                    style={{
-                      position: 'absolute',
-                      right: '1rem',
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      background: 'none',
-                      border: 'none',
-                      color: '#6b7280',
-                      cursor: 'pointer'
-                    }}
+                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                  <div>
+                    <label style={{ display: 'block', fontWeight: '500', color: '#374151', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+                      Correo electrónico
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                      <i className="fas fa-envelope" style={{ 
+                        position: 'absolute', 
+                        left: '1rem', 
+                        top: '50%', 
+                        transform: 'translateY(-50%)', 
+                        color: '#6b7280' 
+                      }}></i>
+                      <input 
+                        type="email" 
+                        value={email} 
+                        onChange={(e) => setEmail(e.target.value)} 
+                        required 
+                        placeholder="tú@ejemplo.com"
+                        className="auth-input"
+                        style={{ paddingLeft: '2.5rem', width: '100%' }}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontWeight: '500', color: '#374151', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+                      Contraseña
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                      <i className="fas fa-lock" style={{ 
+                        position: 'absolute', 
+                        left: '1rem', 
+                        top: '50%', 
+                        transform: 'translateY(-50%)', 
+                        color: '#6b7280' 
+                      }}></i>
+                      <input 
+                        type={showPassword ? "text" : "password"}
+                        value={password} 
+                        onChange={(e) => setPassword(e.target.value)} 
+                        required 
+                        placeholder="••••••••"
+                        className="auth-input"
+                        style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem', width: '100%' }}
+                      />
+                      <button
+                        type="button"
+                        onClick={togglePasswordVisibility}
+                        style={{
+                          position: 'absolute',
+                          right: '1rem',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          background: 'none',
+                          border: 'none',
+                          color: '#6b7280',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <i className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div style={{ textAlign: 'right' }}>
+                    <button
+                      type="button"
+                      onClick={openForgotPassword}
+                      className="auth-link"
+                      style={{ 
+                        background: 'none', 
+                        border: 'none', 
+                        color: '#4f46e5', 
+                        cursor: 'pointer',
+                        fontSize: '0.9rem',
+                        textDecoration: 'underline'
+                      }}
+                    >
+                      ¿Olvidaste tu contraseña?
+                    </button>
+                  </div>
+
+                  {error && (
+                    <div className="auth-error">
+                      <i className="fas fa-exclamation-circle"></i>
+                      {error}
+                    </div>
+                  )}
+
+                  <button 
+                    type="submit" 
+                    className="btn-primary"
+                    disabled={loading}
+                    style={{ width: '100%', marginTop: '0.5rem' }}
                   >
-                    <i className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                    {loading ? (
+                      <>
+                        <i className="fas fa-spinner fa-spin"></i>
+                        Entrando...
+                      </>
+                    ) : (
+                      <>
+                        <i className="fas fa-sign-in-alt"></i>
+                        Iniciar sesión
+                      </>
+                    )}
                   </button>
-                </div>
-              </div>
+                </form>
 
-              {error && (
-                <div className="auth-error">
-                  <i className="fas fa-exclamation-circle"></i>
-                  {error}
+                <div style={{ textAlign: 'center', marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid #e5e7eb' }}>
+                  <p style={{ color: '#6b7280', fontSize: '0.9rem' }}>
+                    ¿No tienes cuenta?{" "}
+                    <a href="/auth/register" className="auth-link">
+                      Regístrate ahora
+                    </a>
+                  </p>
                 </div>
-              )}
+              </>
+            ) : (
+              /* Formulario de Recuperación de Contraseña */
+              <>
+                <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                  <div className="hero-badge">
+                    <i className="fas fa-key"></i> Recuperar contraseña
+                  </div>
+                  <h1 style={{ fontSize: '2rem', fontWeight: '700', marginBottom: '0.5rem', color: '#1f2937' }}>
+                    Recupera tu acceso
+                  </h1>
+                  <p style={{ color: '#6b7280' }}>
+                    Te enviaremos un enlace para restablecer tu contraseña.
+                  </p>
+                </div>
 
-              <button 
-                type="submit" 
-                className="btn-primary"
-                disabled={loading}
-                style={{ width: '100%', marginTop: '0.5rem' }}
-              >
-                {loading ? (
-                  <>
-                    <i className="fas fa-spinner fa-spin"></i>
-                    Entrando...
-                  </>
+                {resetSent ? (
+                  <div style={{ textAlign: 'center', padding: '2rem' }}>
+                    <div style={{ 
+                      width: '80px', 
+                      height: '80px', 
+                      background: '#d1fae5', 
+                      borderRadius: '50%', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center',
+                      margin: '0 auto 1.5rem',
+                      color: '#10b981',
+                      fontSize: '2rem'
+                    }}>
+                      <i className="fas fa-check"></i>
+                    </div>
+                    <h3 style={{ marginBottom: '1rem', color: '#1f2937' }}>Correo enviado</h3>
+                    <p style={{ color: '#6b7280', marginBottom: '2rem' }}>
+                      Hemos enviado un enlace de recuperación a <strong>{resetEmail}</strong>. 
+                      Revisa tu bandeja de entrada.
+                    </p>
+                    <button
+                      onClick={closeForgotPassword}
+                      className="btn-primary"
+                      style={{ width: '100%' }}
+                    >
+                      <i className="fas fa-arrow-left"></i> Volver al login
+                    </button>
+                  </div>
                 ) : (
-                  <>
-                    <i className="fas fa-sign-in-alt"></i>
-                    Iniciar sesión
-                  </>
-                )}
-              </button>
-            </form>
+                  <form onSubmit={handleForgotPassword} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                    <div>
+                      <label style={{ display: 'block', fontWeight: '500', color: '#374151', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+                        Correo electrónico
+                      </label>
+                      <div style={{ position: 'relative' }}>
+                        <i className="fas fa-envelope" style={{ 
+                          position: 'absolute', 
+                          left: '1rem', 
+                          top: '50%', 
+                          transform: 'translateY(-50%)', 
+                          color: '#6b7280' 
+                        }}></i>
+                        <input 
+                          type="email" 
+                          value={resetEmail} 
+                          onChange={(e) => setResetEmail(e.target.value)} 
+                          required 
+                          placeholder="tú@ejemplo.com"
+                          className="auth-input"
+                          style={{ paddingLeft: '2.5rem', width: '100%' }}
+                        />
+                      </div>
+                    </div>
 
-            <div style={{ textAlign: 'center', marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid #e5e7eb' }}>
-              <p style={{ color: '#6b7280', fontSize: '0.9rem' }}>
-                ¿No tienes cuenta?{" "}
-                <a href="/auth/register" className="auth-link">
-                  Regístrate ahora
-                </a>
-              </p>
-            </div>
+                    {error && (
+                      <div className="auth-error">
+                        <i className="fas fa-exclamation-circle"></i>
+                        {error}
+                      </div>
+                    )}
+
+                    <div style={{ display: 'flex', gap: '1rem' }}>
+                      <button
+                        type="button"
+                        onClick={closeForgotPassword}
+                        className="btn-secondary"
+                        style={{ flex: 1 }}
+                      >
+                        <i className="fas fa-arrow-left"></i> Volver
+                      </button>
+                      <button 
+                        type="submit" 
+                        className="btn-primary"
+                        disabled={resetLoading}
+                        style={{ flex: 2 }}
+                      >
+                        {resetLoading ? (
+                          <>
+                            <i className="fas fa-spinner fa-spin"></i>
+                            Enviando...
+                          </>
+                        ) : (
+                          <>
+                            <i className="fas fa-paper-plane"></i>
+                            Enviar enlace
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </form>
+                )}
+              </>
+            )}
           </div>
 
           {/* Hero Visual similar al dashboard */}
