@@ -4,7 +4,8 @@ import styles from "./accessibility.module.css";
 
 type A11yState = {
   contrast: boolean;
-  largeText: boolean;
+  // textScale: 1 = normal, 1.15 = medio, 1.3 = grande
+  textScale: number;
   increasedSpacing: boolean;
   dyslexicFont: boolean;
 };
@@ -15,15 +16,24 @@ export default function AccessibilityMenu() {
   const [open, setOpen] = useState(false);
   const [state, setState] = useState<A11yState>({
     contrast: false,
-    largeText: false,
+    textScale: 1,
     increasedSpacing: false,
     dyslexicFont: false,
   });
+  const [speaking, setSpeaking] = useState(false);
 
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setState(JSON.parse(raw));
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        // migration: older saved value used `largeText: true` — map to textScale
+        if (typeof parsed.largeText === "boolean") {
+          parsed.textScale = parsed.largeText ? 1.15 : 1;
+          delete parsed.largeText;
+        }
+        setState((s) => ({ ...s, ...parsed }));
+      }
     } catch (e) {
       // ignore
     }
@@ -32,9 +42,12 @@ export default function AccessibilityMenu() {
   useEffect(() => {
     const root = document.documentElement;
     toggleClass(root, "a11y-contrast", state.contrast);
-    toggleClass(root, "a11y-large-text", state.largeText);
     toggleClass(root, "a11y-spacing", state.increasedSpacing);
     toggleClass(root, "a11y-dyslexic-font", state.dyslexicFont);
+    // apply text scale via CSS variable for predictable behaviour
+    try {
+      root.style.setProperty("--a11y-text-scale", String(state.textScale));
+    } catch (e) {}
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch (e) {}
@@ -53,6 +66,15 @@ export default function AccessibilityMenu() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  // clean up speech on unmount
+  useEffect(() => {
+    return () => {
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
+
   function toggleClass(el: Element, className: string, enabled: boolean) {
     if (enabled) el.classList.add(className);
     else el.classList.remove(className);
@@ -60,6 +82,45 @@ export default function AccessibilityMenu() {
 
   function update<K extends keyof A11yState>(key: K, val: A11yState[K]) {
     setState((s) => ({ ...s, [key]: val }));
+  }
+
+  function increaseText() {
+    setState((s) => ({ ...s, textScale: Math.min(1.5, +(s.textScale + 0.15).toFixed(2)) }));
+  }
+
+  function decreaseText() {
+    setState((s) => ({ ...s, textScale: Math.max(0.85, +(s.textScale - 0.15).toFixed(2)) }));
+  }
+
+  function resetPreferences() {
+    const clean: A11yState = { contrast: false, textScale: 1, increasedSpacing: false, dyslexicFont: false };
+    setState(clean);
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch (e) {}
+  }
+
+  function speakPage() {
+    if (!("speechSynthesis" in window)) {
+      alert("TTS no soportado en este navegador");
+      return;
+    }
+    const text = document.body.innerText.replace(/\s+/g, " ").trim();
+    if (!text) return;
+    const utter = new SpeechSynthesisUtterance(text.substring(0, 20000));
+    utter.lang = document.documentElement.lang || "es-ES";
+    utter.onend = () => setSpeaking(false);
+    utter.onerror = () => setSpeaking(false);
+    setSpeaking(true);
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utter);
+  }
+
+  function stopSpeaking() {
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+      setSpeaking(false);
+    }
   }
 
   return (
@@ -89,6 +150,16 @@ export default function AccessibilityMenu() {
 
         <div className={styles.section}>
           <h4>Visual</h4>
+          <div className={styles.row}>
+            <span>Escala de texto</span>
+            <div className={styles.controlGroup}>
+              <button className={styles.small} onClick={decreaseText} aria-label="Disminuir tamaño">A-</button>
+              <span aria-live="polite" className={styles.scaleLabel}>{Math.round(state.textScale * 100)}%</span>
+              <button className={styles.small} onClick={increaseText} aria-label="Aumentar tamaño">A+</button>
+              <button className={styles.small} onClick={() => resetPreferences()} aria-label="Restablecer preferencias">Reset</button>
+            </div>
+          </div>
+
           <label className={styles.row}>
             <input
               type="checkbox"
@@ -96,15 +167,6 @@ export default function AccessibilityMenu() {
               onChange={(e) => update("contrast", e.target.checked)}
             />
             Alto contraste / modo oscuro
-          </label>
-
-          <label className={styles.row}>
-            <input
-              type="checkbox"
-              checked={state.largeText}
-              onChange={(e) => update("largeText", e.target.checked)}
-            />
-            Aumentar tamaño de texto
           </label>
 
           <label className={styles.row}>
@@ -132,12 +194,21 @@ export default function AccessibilityMenu() {
             Herramientas auditivas como subtítulos o transcripción deben
             activarse por la entidad de media (placeholder).
           </p>
-          <button
-            className={styles.small}
-            onClick={() => alert("Funcionalidad de subtítulos (placeholder)")}
-          >
-            Activar subtítulos (placeholder)
-          </button>
+          <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
+            <button
+              className={styles.small}
+              onClick={() => alert("Funcionalidad de subtítulos (placeholder)")}
+            >
+              Activar subtítulos
+            </button>
+            <button
+              className={styles.small}
+              onClick={() => (speaking ? stopSpeaking() : speakPage())}
+              aria-pressed={speaking}
+            >
+              {speaking ? "Detener lectura" : "Leer página"}
+            </button>
+          </div>
         </div>
 
         <div className={styles.section}>

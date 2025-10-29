@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import "../styles/globals.css"; // acá va tu CSS global (lo que era styles.css en el HTML)
 import ToastProvider from "../providers/ToastProvider";
 import { Poppins, Inter } from "next/font/google";
-import menu from "../components/AccessibilityMenu.module.css";
+import AccessibilityMenu from "../components/accecibilidad/menu";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -37,6 +37,7 @@ export default function RootLayout({
         />
       </head>
       <body>
+<<<<<<< HEAD
         <ToastProvider>
           {children}
 
@@ -55,6 +56,11 @@ export default function RootLayout({
             </div>
           </footer>
         </ToastProvider>
+=======
+        {children}
+        {/* Menú de accesibilidad (siempre disponible) */}
+        <AccessibilityMenu />
+>>>>>>> a4ce1cb5862e03bdc571384487ae4de44331fdc0
       </body>
 
     </html>
