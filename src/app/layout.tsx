@@ -56,7 +56,7 @@ export default function RootLayout({
           </footer>
         </ToastProvider>
       </body>
-      
+
     </html>
   );
 }

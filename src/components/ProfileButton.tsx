@@ -3,5 +3,5 @@
 // fully delete this file later, we can remove it once no imports remain.
 
 export default function ProfileButton() {
-  return null;
+    return null;
 }
