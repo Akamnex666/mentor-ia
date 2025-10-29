@@ -2,7 +2,7 @@
 import type { Metadata } from "next";
 import "../styles/globals.css"; // acá va tu CSS global (lo que era styles.css en el HTML)
 import { Poppins, Inter } from "next/font/google";
-import menu from "../components/AccessibilityMenu.module.css";
+import AccessibilityMenu from "../components/accecibilidad/menu";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -35,9 +35,10 @@ export default function RootLayout({
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
         />
       </head>
-      <body>{children}
-      {/* Menú de accesibilidad */}
-      <menu/>  
+      <body>
+        {children}
+        {/* Menú de accesibilidad (siempre disponible) */}
+        <AccessibilityMenu />
       </body>
       
     </html>
