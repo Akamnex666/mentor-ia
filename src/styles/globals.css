@@ -418,14 +418,14 @@ body {
   }
 }
 
-/* === Auth forms (login/register/forgot) === */
+/* === Auth Pages Styles === */
 .auth-container {
-  min-height: calc(100vh - 7rem);
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
-  background: linear-gradient(180deg, rgba(239, 246, 255, 0.6), rgba(255, 255, 255, 0.6));
+  padding: 7rem 2rem 2rem;
+  background: linear-gradient(to bottom, #eef2ff, #ffffff);
 }
 
 .auth-card {
@@ -438,19 +438,48 @@ body {
   border: 1px solid rgba(79, 70, 229, 0.06);
 }
 
-.auth-title {
-  font-size: 1.5rem;
-  color: #0f172a;
-  margin-bottom: 0.25rem;
-  font-weight: 700;
+/* Para el diseño de dos columnas en login/register */
+.auth-card[style*="gridTemplateColumns"] {
+  max-width: 1000px !important;
+  min-height: 600px;
 }
 
-.auth-subtitle {
-  color: #6b7280;
-  font-size: 0.95rem;
-  margin-bottom: 1.25rem;
+.auth-card[style*="gridTemplateColumns"] > div:first-child {
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
+.auth-card[style*="gridTemplateColumns"] > div:last-child {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+  .auth-card[style*="gridTemplateColumns"] {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .auth-card[style*="gridTemplateColumns"] > div:last-child {
+    display: none;
+  }
+  
+  .auth-card[style*="gridTemplateColumns"] > div:first-child {
+    padding: 2rem;
+  }
+  
+  .auth-container {
+    padding: 6rem 1rem 1rem;
+  }
+}
+
+/* Mejoras para los inputs con iconos */
 .auth-input {
   width: 100%;
   padding: 0.75rem 1rem;
@@ -459,86 +488,59 @@ body {
   outline: none;
   font-size: 0.95rem;
   color: #0f172a;
+  transition: all 0.2s ease;
 }
 
 .auth-input:focus {
   border-color: #4f46e5;
-  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.06);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
-.auth-row {
+.auth-input::placeholder {
+  color: #9ca3af;
+}
+
+/* Estilos para mensajes de error y éxito */
+.auth-error, .auth-success {
   display: flex;
-  gap: 1rem;
   align-items: center;
-}
-
-.auth-button {
-  background: #4f46e5;
-  color: #fff;
-  padding: 0.8rem 1.25rem;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
   border-radius: 10px;
-  border: none;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.auth-button.secondary {
-  background: transparent;
-  border: 1px solid #4f46e5;
-  color: #4f46e5
-}
-
-.auth-link {
-  color: #4f46e5;
-  text-decoration: underline;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
 }
 
 .auth-error {
-  color: #b91c1c;
-  background: #fff5f5;
-  padding: 0.5rem 0.75rem;
-  border-radius: 8px;
-  margin-top: 0.5rem;
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
 }
 
 .auth-success {
-  color: #065f46;
-  background: #ecfdf5;
-  padding: 0.5rem 0.75rem;
-  border-radius: 8px;
-  margin-top: 0.5rem;
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
 }
 
-.auth-aux {
+/* Enlaces de autenticación */
+.auth-link {
+  color: #4f46e5;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.auth-link:hover {
+  color: #4338ca;
+  text-decoration: underline;
+}
+
+/* Botón primario de ancho completo */
+.btn-primary.full {
+  width: 100%;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 1rem;
-  margin-top: 0.5rem
+  justify-content: center;
+  gap: 0.5rem;
 }
-
-.a11y-contrast {
-  /* Do not change global page background to avoid large dark blocks.
-     Only adjust text coloring for improved contrast. */
-  color: #fff;
-}
-
-.a11y-contrast a {
-  color: #79b8ff;
-}
-
-.a11y-large-text {
-  font-size: 1.15rem;
-}
-
-.a11y-spacing {
-  letter-spacing: 0.02em;
-  line-height: 1.6;
-}
-
-.a11y-dyslexic-font {
-  font-family: 'OpenDyslexic', system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
-}
-
-/* Placeholder for profile/avatar slot (when no user is logged in) */
-/* profile placeholder and positioning removed - no profile UI in layout */
