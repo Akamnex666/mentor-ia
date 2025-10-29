@@ -1,0 +1,42 @@
+.container { position: fixed; z-index: 9999; right: 1rem; bottom: 1rem; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
+.fab {
+  width: 56px;
+  height: 56px;
+  border-radius: 9999px;
+  background: #005fcc;
+  color: white;
+  border: none;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+  cursor: pointer;
+  font-size: 20px;
+}
+.panel {
+  position: fixed;
+  right: 1rem;
+  bottom: 6.5rem;
+  width: 320px;
+  max-width: calc(100vw - 2rem);
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  padding: 0.5rem;
+  transform-origin: bottom right;
+  transform: scale(0.9);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.18s ease, opacity 0.18s ease;
+}
+.open { transform: scale(1); opacity: 1; pointer-events: auto; }
+.header { display:flex; align-items:center; justify-content:space-between; padding:0.25rem 0.5rem; border-bottom:1px solid #eee; }
+.section { padding:0.5rem; }
+.row { display:flex; gap:0.5rem; align-items:center; padding:0.25rem 0; }
+.small { padding:0.35rem 0.5rem; border-radius:6px; background:#f0f0f0; border:1px solid #ddd; cursor:pointer; }
+.footer { padding:0.5rem; border-top:1px solid #eee; text-align:center; font-size:12px; color:#666; }
+.note { font-size:13px; margin-bottom:0.5rem; color:#333; }
+
+/* Utility classes applied to :root by the component */
+:root.a11y-contrast { background: #111; color: #fff; }
+:root.a11y-contrast a { color: #79b8ff; }
+:root.a11y-large-text { font-size: 1.15rem; }
+:root.a11y-spacing { letter-spacing: 0.02em; line-height: 1.6; }
+:root.a11y-dyslexic-font { font-family: 'OpenDyslexic', system-ui, -apple-system, 'Segoe UI', Roboto, Arial; }
