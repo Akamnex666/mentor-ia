@@ -1,6 +1,7 @@
 // app/layout.tsx
 import type { Metadata } from "next";
 import "../styles/globals.css"; // acá va tu CSS global (lo que era styles.css en el HTML)
+import ToastProvider from "../providers/ToastProvider";
 import { Poppins, Inter } from "next/font/google";
 import menu from "../components/AccessibilityMenu.module.css";
 
@@ -35,9 +36,25 @@ export default function RootLayout({
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
         />
       </head>
-      <body>{children}
-      {/* Menú de accesibilidad */}
-      <menu/>  
+      <body>
+        <ToastProvider>
+          {children}
+
+          {/* (panel de perfil removido) */}
+
+          {/* Menú de accesibilidad */}
+          <menu />
+
+          <footer className="w-full border-t mt-8 p-4 text-sm text-center text-gray-600">
+            <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2">
+              <div>© {new Date().getFullYear()} MentorIA</div>
+              <div className="flex gap-4">
+                <a href="/terms" className="underline">Términos de uso</a>
+                <a href="/privacy" className="underline">Política de privacidad</a>
+              </div>
+            </div>
+          </footer>
+        </ToastProvider>
       </body>
       
     </html>

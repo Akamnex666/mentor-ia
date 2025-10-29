@@ -359,9 +359,71 @@ body {
     gap: 2rem;
   }
 }
+
+/* === Auth forms (login/register/forgot) === */
+.auth-container {
+  min-height: calc(100vh - 7rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: linear-gradient(180deg, rgba(239,246,255,0.6), rgba(255,255,255,0.6));
+}
+.auth-card {
+  width: 100%;
+  max-width: 520px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(15,23,42,0.08);
+  padding: 2.5rem;
+  border: 1px solid rgba(79,70,229,0.06);
+}
+.auth-title {
+  font-size: 1.5rem;
+  color: #0f172a;
+  margin-bottom: 0.25rem;
+  font-weight: 700;
+}
+.auth-subtitle {
+  color: #6b7280;
+  font-size: 0.95rem;
+  margin-bottom: 1.25rem;
+}
+.auth-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 1px solid #e6e9ef;
+  outline: none;
+  font-size: 0.95rem;
+  color: #0f172a;
+}
+.auth-input:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 4px rgba(79,70,229,0.06);
+}
+.auth-row { display:flex; gap:1rem; align-items:center; }
+.auth-button {
+  background: #4f46e5;
+  color: #fff;
+  padding: 0.8rem 1.25rem;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+.auth-button.secondary { background: transparent; border:1px solid #4f46e5; color:#4f46e5 }
+.auth-link { color: #4f46e5; text-decoration: underline; }
+.auth-error { color: #b91c1c; background: #fff5f5; padding: 0.5rem 0.75rem; border-radius: 8px; margin-top:0.5rem; }
+.auth-success { color: #065f46; background: #ecfdf5; padding: 0.5rem 0.75rem; border-radius: 8px; margin-top:0.5rem; }
+.auth-aux { display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-top:0.5rem }
+
 /* Accesibilidad: clases aplicadas desde AccessibilityMenu */
 .a11y-contrast { filter: none; background: #0b0b0b; color: #fff; }
 .a11y-contrast a { color: #79b8ff; }
 .a11y-large-text { font-size: 1.15rem; }
 .a11y-spacing { letter-spacing: 0.02em; line-height: 1.6; }
 .a11y-dyslexic-font { font-family: 'OpenDyslexic', system-ui, -apple-system, 'Segoe UI', Roboto, Arial; }
+
+/* Placeholder for profile/avatar slot (when no user is logged in) */
+/* profile placeholder and positioning removed - no profile UI in layout */
