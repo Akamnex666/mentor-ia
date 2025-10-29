@@ -39,8 +39,12 @@
 .scaleLabel { min-width:44px; text-align:center; font-weight:600; }
 .panel button:focus-visible { outline: 3px solid #9be7ff; outline-offset: 2px; }
 
-/* Utility classes applied to :root by the component */
-:root.a11y-contrast { background: #111; color: #fff; }
+/* Utility classes applied to :root by the component.
+  NOTE: avoid changing the global page background when contrast is toggled,
+  to prevent large dark areas overlaying the layout (users can still enable
+  contrast via selective color changes). */
+
+/* Only adjust text/link colors and allow panel-specific contrast styling */
 :root.a11y-contrast a { color: #79b8ff; }
 :root.a11y-large-text { font-size: 1.15rem; }
 :root.a11y-spacing { letter-spacing: 0.02em; line-height: 1.6; }
@@ -50,4 +54,5 @@
 :root { --a11y-text-scale: 1; }
 :root { font-size: calc(var(--a11y-text-scale) * 1rem); }
 
+/* Panel contrast: local to the accessibility panel only */
 :root.a11y-contrast .panel { background: #222; color: #fff; border-color: #333; }

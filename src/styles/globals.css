@@ -517,10 +517,9 @@ body {
   margin-top: 0.5rem
 }
 
-/* Accesibilidad: clases aplicadas desde AccessibilityMenu */
 .a11y-contrast {
-  filter: none;
-  background: #0b0b0b;
+  /* Do not change global page background to avoid large dark blocks.
+     Only adjust text coloring for improved contrast. */
   color: #fff;
 }
 

@@ -36,15 +36,13 @@ export default function RootLayout({
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
         />
       </head>
+
       <body>
-<<<<<<< HEAD
         <ToastProvider>
           {children}
 
-          {/* (panel de perfil removido) */}
-
-          {/* Menú de accesibilidad */}
-          <menu />
+          {/* Menú de accesibilidad (siempre disponible) */}
+          <AccessibilityMenu />
 
           <footer className="w-full border-t mt-8 p-4 text-sm text-center text-gray-600">
             <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2">
@@ -56,11 +54,6 @@ export default function RootLayout({
             </div>
           </footer>
         </ToastProvider>
-=======
-        {children}
-        {/* Menú de accesibilidad (siempre disponible) */}
-        <AccessibilityMenu />
->>>>>>> a4ce1cb5862e03bdc571384487ae4de44331fdc0
       </body>
 
     </html>
