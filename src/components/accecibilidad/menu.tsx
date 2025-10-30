@@ -48,8 +48,28 @@ export default function AccessibilityMenu() {
     try {
       root.style.setProperty("--a11y-text-scale", String(state.textScale));
     } catch (e) {}
+    // also apply a direct inline fallback for contrast so it always takes
+    // effect even if other global CSS rules are very specific.
+    try {
+      if (state.contrast) {
+        // only set background as an inline fallback; avoid forcing text color
+        document.documentElement.style.backgroundColor = "#1a1a1a";
+        document.body.style.backgroundColor = "#1a1a1a";
+      } else {
+        // remove inline styles to restore original theme
+        document.documentElement.style.backgroundColor = "";
+        document.body.style.backgroundColor = "";
+      }
+    } catch (e) {}
+
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {}
+
+    // debugging: log current classes and state (can be removed later)
+    try {
+      // eslint-disable-next-line no-console
+      console.log("[a11y] state:", state, "html.classes:", document.documentElement.className);
     } catch (e) {}
   }, [state]);
 

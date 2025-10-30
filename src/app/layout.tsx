@@ -4,6 +4,8 @@ import "../styles/globals.css"; // acá va tu CSS global (lo que era styles.css 
 import ToastProvider from "../providers/ToastProvider";
 import { Poppins, Inter } from "next/font/google";
 import AccessibilityMenu from "../components/accecibilidad/menu";
+import SyncA11y from "../components/accecibilidad/SyncA11y";
+import Script from 'next/script';
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -35,10 +37,34 @@ export default function RootLayout({
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
         />
+        {/* Apply saved accessibility preferences to <html> before React hydrates.
+            This prevents a flash of the default (light) layout when contrast/text-scale
+            were previously enabled by the user. */}
+        <Script id="a11y-init" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: `
+          (function(){
+            try{
+              var raw = localStorage.getItem('site_a11y_prefs');
+              if(!raw) return;
+              var prefs = JSON.parse(raw);
+              var root = document.documentElement;
+              if(!root) return;
+              if(prefs.contrast) root.classList.add('a11y-contrast'); else root.classList.remove('a11y-contrast');
+              if(prefs.increasedSpacing) root.classList.add('a11y-spacing'); else root.classList.remove('a11y-spacing');
+              if(prefs.dyslexicFont) root.classList.add('a11y-dyslexic-font'); else root.classList.remove('a11y-dyslexic-font');
+              if(prefs.largeControls) root.classList.add('a11y-large-controls'); else root.classList.remove('a11y-large-controls');
+              if(typeof prefs.textScale === 'number') root.style.setProperty('--a11y-text-scale', String(prefs.textScale));
+              // fallback background to avoid white flash when contrast is enabled
+              if(prefs.contrast){ document.documentElement.style.backgroundColor = '#1a1a1a'; document.body && (document.body.style.backgroundColor = '#1a1a1a'); }
+            }catch(e){}
+          })();
+        ` }} />
       </head>
 
       <body>
         <ToastProvider>
+          {/* Sync saved a11y prefs early so layout elements render correctly */}
+          <SyncA11y />
+
           {children}
 
           {/* Menú de accesibilidad (siempre disponible) */}

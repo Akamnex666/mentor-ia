@@ -142,3 +142,153 @@
   color: #fff;
   border-color: #333;
 }
+
+/* Global overrides (CSS Modules) - ensure styles apply when class is added to <html> */
+:global(html.a11y-contrast),
+:global(:root.a11y-contrast) {
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+}
+
+:global(html.a11y-contrast *),
+:global(:root.a11y-contrast *) {
+  border-color: #444 !important;
+}
+
+:global(html.a11y-contrast a),
+:global(:root.a11y-contrast a) {
+  color: #79b8ff !important;
+}
+
+:global(html.a11y-contrast button),
+:global(:root.a11y-contrast button) {
+  background: #2d2d2d !important;
+  color: #ffffff !important;
+  border-color: #555 !important;
+}
+
+:global(html.a11y-contrast input),
+:global(:root.a11y-contrast input),
+:global(html.a11y-contrast textarea),
+:global(:root.a11y-contrast textarea),
+:global(html.a11y-contrast select),
+:global(:root.a11y-contrast select) {
+  background: #2d2d2d !important;
+  color: #ffffff !important;
+  border-color: #555 !important;
+}
+
+:global(html.a11y-contrast .panel),
+:global(:root.a11y-contrast .panel) {
+  background: #222 !important;
+  color: #fff !important;
+  border-color: #444 !important;
+}
+
+:global(html.a11y-dyslexic-font),
+:global(:root.a11y-dyslexic-font) {
+  font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', 'Trebuchet MS', system-ui, sans-serif !important;
+}
+
+:global(html.a11y-spacing),
+:global(:root.a11y-spacing) {
+  letter-spacing: 0.05em !important;
+  line-height: 1.8 !important;
+}
+
+:global(html.a11y-large-controls) button,
+:global(:root.a11y-large-controls) button,
+:global(html.a11y-large-controls) input,
+:global(:root.a11y-large-controls) input {
+  padding: 0.9rem 1.2rem !important;
+  font-size: 1.1rem !important;
+  min-height: 48px !important;
+}
+
+:global(:root) {
+  --a11y-text-scale: 1;
+}
+
+:global(html) {
+  font-size: calc(var(--a11y-text-scale) * 16px) !important;
+}
+
+/* Additional global overrides for layout elements that use their own backgrounds
+   These ensure the navigation, hero and primary buttons flip to dark variants
+   when the a11y contrast class is active. Keep rules specific and use !important
+   sparingly only where necessary to override site globals. */
+:global(html.a11y-contrast .navbar),
+:global(:root.a11y-contrast .navbar) {
+  background: rgba(20,20,20,0.95) !important;
+  backdrop-filter: none !important;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.6) !important;
+}
+
+:global(html.a11y-contrast .logo),
+:global(:root.a11y-contrast .logo) {
+  color: #9BE7FF !important;
+}
+
+:global(html.a11y-contrast .nav-menu a),
+:global(:root.a11y-contrast .nav-menu a) {
+  color: #e6f7ff !important;
+}
+
+:global(html.a11y-contrast .btn-login),
+:global(:root.a11y-contrast .btn-login) {
+  background: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: transparent !important;
+}
+
+:global(html.a11y-contrast .hero),
+:global(:root.a11y-contrast .hero) {
+  background: linear-gradient(180deg,#0f172a,#0b1220) !important;
+}
+
+:global(html.a11y-contrast .hero h1),
+:global(:root.a11y-contrast .hero h1) {
+  color: #ffffff !important;
+}
+
+:global(html.a11y-contrast .bright-text),
+:global(:root.a11y-contrast .bright-text) {
+  color: #7dd3fc !important;
+}
+
+:global(html.a11y-contrast .hero p),
+:global(:root.a11y-contrast .hero p) {
+  color: #cbd5e1 !important;
+}
+
+:global(html.a11y-contrast .btn-primary),
+:global(:root.a11y-contrast .btn-primary) {
+  background: #2563eb !important; /* blue-600 */
+  color: #fff !important;
+}
+
+:global(html.a11y-contrast .btn-secondary),
+:global(:root.a11y-contrast .btn-secondary) {
+  background: transparent !important;
+  border-color: #60a5fa !important;
+  color: #bfe9ff !important;
+}
+
+:global(html.a11y-contrast .hero-illustration),
+:global(:root.a11y-contrast .hero-illustration) {
+  background: #0b1220 !important;
+  color: #60a5fa !important;
+}
+
+:global(html.a11y-contrast .hero-badge),
+:global(:root.a11y-contrast .hero-badge) {
+  background: #112233 !important;
+  color: #9be7ff !important;
+}
+
+:global(html.a11y-contrast .feature-card),
+:global(:root.a11y-contrast .feature-card) {
+  background: #0b1220 !important;
+  color: #e6eef8 !important;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.6) !important;
+}
