@@ -50,17 +50,10 @@ export default function AccessibilityMenu() {
     } catch (e) {}
     // also apply a direct inline fallback for contrast so it always takes
     // effect even if other global CSS rules are very specific.
-    try {
-      if (state.contrast) {
-        // only set background as an inline fallback; avoid forcing text color
-        document.documentElement.style.backgroundColor = "#1a1a1a";
-        document.body.style.backgroundColor = "#1a1a1a";
-      } else {
-        // remove inline styles to restore original theme
-        document.documentElement.style.backgroundColor = "";
-        document.body.style.backgroundColor = "";
-      }
-    } catch (e) {}
+    // Avoid mutating inline background styles on <html> or <body> here because
+    // changing attributes/styles before or during hydration can trigger
+    // hydration mismatches. Visual changes for contrast are handled by
+    // CSS rules tied to the `.a11y-contrast` class.
 
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
