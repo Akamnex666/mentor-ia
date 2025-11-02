@@ -213,6 +213,40 @@
   font-size: calc(var(--a11y-text-scale) * 16px) !important;
 }
 
+:global(:root) {
+  --a11y-accent: #79b8ff;
+  --a11y-font: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+
+:global(html.a11y-custom-font),
+:global(:root.a11y-custom-font),
+:global(html.a11y-custom-font),
+:global(body.a11y-custom-font) {
+  font-family: var(--a11y-font) !important;
+}
+
+:global(:root.a11y-link-highlight a),
+:global(html.a11y-link-highlight a),
+:global(body.a11y-link-highlight a) {
+  color: var(--a11y-accent) !important;
+  background-image: linear-gradient(var(--a11y-accent), var(--a11y-accent)) !important;
+  background-repeat: no-repeat !important;
+  background-size: 100% 2px !important;
+  background-position: 0 100% !important;
+  text-decoration: none !important;
+}
+
+:global(:root.a11y-link-highlight .nav-menu a),
+:global(html.a11y-link-highlight .nav-menu a),
+:global(body.a11y-link-highlight .nav-menu a) {
+  color: var(--a11y-accent) !important;
+}
+
+:global(*:focus-visible) {
+  outline: 3px solid var(--a11y-accent) !important;
+  outline-offset: 3px !important;
+}
+
 /* Additional global overrides for layout elements that use their own backgrounds
    These ensure the navigation, hero and primary buttons flip to dark variants
    when the a11y contrast class is active. Keep rules specific and use !important

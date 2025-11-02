@@ -7,6 +7,9 @@ type A11yState = {
   increasedSpacing?: boolean;
   dyslexicFont?: boolean;
   largeControls?: boolean;
+  font?: string;
+  accentColor?: string;
+  linkHighlight?: boolean;
 };
 
 const STORAGE_KEY = "site_a11y_prefs";
@@ -31,6 +34,18 @@ function applyPrefs(p: A11yState | null) {
     if (typeof p.textScale === "number") {
       root.style.setProperty("--a11y-text-scale", String(p.textScale));
     }
+    if (p.font) {
+      root.style.setProperty("--a11y-font", p.font);
+      root.classList.add("a11y-custom-font");
+    } else {
+      root.style.removeProperty("--a11y-font");
+      root.classList.remove("a11y-custom-font");
+    }
+    if (p.accentColor) {
+      root.style.setProperty("--a11y-accent", p.accentColor);
+    }
+    if (p.linkHighlight) root.classList.add("a11y-link-highlight");
+    else root.classList.remove("a11y-link-highlight");
   } catch (e) {
     // ignore
   }

@@ -8,6 +8,9 @@ type A11yState = {
   textScale: number;
   increasedSpacing: boolean;
   dyslexicFont: boolean;
+  font?: string;
+  accentColor?: string;
+  linkHighlight?: boolean;
 };
 
 const STORAGE_KEY = "site_a11y_prefs";
@@ -19,6 +22,9 @@ export default function AccessibilityMenu() {
     textScale: 1,
     increasedSpacing: false,
     dyslexicFont: false,
+    font: undefined,
+    accentColor: undefined,
+    linkHighlight: false,
   });
   const [speaking, setSpeaking] = useState(false);
 
@@ -44,6 +50,28 @@ export default function AccessibilityMenu() {
     toggleClass(root, "a11y-contrast", state.contrast);
     toggleClass(root, "a11y-spacing", state.increasedSpacing);
     toggleClass(root, "a11y-dyslexic-font", state.dyslexicFont);
+    if (state.font) {
+      try {
+        root.style.setProperty('--a11y-font', state.font);
+        root.classList.add('a11y-custom-font');
+        document.body.classList.add('a11y-custom-font');
+        document.body.style.fontFamily = state.font;
+      } catch (e) {}
+    } else {
+      try {
+        root.style.removeProperty('--a11y-font');
+        root.classList.remove('a11y-custom-font');
+        document.body.classList.remove('a11y-custom-font');
+        document.body.style.fontFamily = '';
+      } catch (e) {}
+    }
+    if (state.accentColor) {
+      try { root.style.setProperty('--a11y-accent', state.accentColor); document.body.style.setProperty('--a11y-accent', state.accentColor); } catch(e){}
+    } else {
+      try { root.style.removeProperty('--a11y-accent'); document.body.style.removeProperty('--a11y-accent'); } catch(e){}
+    }
+    toggleClass(root, 'a11y-link-highlight', !!state.linkHighlight);
+    toggleClass(document.body, 'a11y-link-highlight', !!state.linkHighlight);
     // apply text scale via CSS variable for predictable behaviour
     try {
       root.style.setProperty("--a11y-text-scale", String(state.textScale));
@@ -106,7 +134,7 @@ export default function AccessibilityMenu() {
   }
 
   function resetPreferences() {
-    const clean: A11yState = { contrast: false, textScale: 1, increasedSpacing: false, dyslexicFont: false };
+    const clean: A11yState = { contrast: false, textScale: 1, increasedSpacing: false, dyslexicFont: false, font: undefined, accentColor: undefined, linkHighlight: false };
     setState(clean);
     try {
       localStorage.removeItem(STORAGE_KEY);
@@ -189,6 +217,27 @@ export default function AccessibilityMenu() {
               onChange={(e) => update("dyslexicFont", e.target.checked)}
             />
             Fuente legible (estilo disléxico)
+          </label>
+
+          <div className={styles.row} style={{flexDirection:'column',alignItems:'flex-start'}}>
+            <label style={{width:'100%'}}>Tipo de fuente</label>
+            <select value={state.font || ''} onChange={(e)=> update('font', e.target.value || undefined)} style={{padding:'6px',borderRadius:6}}>
+              <option value="">Sistema (por defecto)</option>
+              <option value="Poppins, system-ui, -apple-system, 'Segoe UI', Roboto, Arial">Poppins</option>
+              <option value="Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial">Inter</option>
+              <option value="'Open Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Arial">Open Sans</option>
+              <option value="Roboto, system-ui, -apple-system, 'Segoe UI', Arial">Roboto</option>
+            </select>
+          </div>
+
+          <div className={styles.row} style={{flexDirection:'column',alignItems:'flex-start'}}>
+            <label>Color personalizado</label>
+            <input type="color" value={state.accentColor || '#79b8ff'} onChange={(e)=> update('accentColor', e.target.value)} />
+          </div>
+
+          <label className={styles.row}>
+            <input type="checkbox" checked={!!state.linkHighlight} onChange={(e)=> update('linkHighlight', e.target.checked)} />
+            Resaltar enlaces y foco visible
           </label>
 
           <label className={styles.row}>
