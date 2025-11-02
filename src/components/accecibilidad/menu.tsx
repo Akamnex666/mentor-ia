@@ -11,12 +11,17 @@ type A11yState = {
   font?: string;
   accentColor?: string;
   linkHighlight?: boolean;
+  keyboardNav?: boolean;
+  largeButtons?: boolean;
+  shortcuts?: { toggleMenu?: string; skipToContent?: string };
+  blockAuto?: boolean;
 };
 
 const STORAGE_KEY = "site_a11y_prefs";
 
 export default function AccessibilityMenu() {
   const [open, setOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState<string | null>("visual");
   const [state, setState] = useState<A11yState>({
     contrast: false,
     textScale: 1,
@@ -25,6 +30,10 @@ export default function AccessibilityMenu() {
     font: undefined,
     accentColor: undefined,
     linkHighlight: false,
+    keyboardNav: false,
+    largeButtons: false,
+    shortcuts: {},
+    blockAuto: false,
   });
   const [speaking, setSpeaking] = useState(false);
 
@@ -50,6 +59,10 @@ export default function AccessibilityMenu() {
     toggleClass(root, "a11y-contrast", state.contrast);
     toggleClass(root, "a11y-spacing", state.increasedSpacing);
     toggleClass(root, "a11y-dyslexic-font", state.dyslexicFont);
+    toggleClass(root, 'a11y-large-controls', !!state.largeButtons);
+    toggleClass(document.body, 'a11y-large-controls', !!state.largeButtons);
+    toggleClass(root, 'a11y-keyboard-nav', !!state.keyboardNav);
+    toggleClass(document.body, 'a11y-keyboard-nav', !!state.keyboardNav);
     if (state.font) {
       try {
         root.style.setProperty('--a11y-font', state.font);
@@ -169,6 +182,7 @@ export default function AccessibilityMenu() {
       <button
         aria-expanded={open}
         aria-controls="a11y-panel"
+        data-a11y-fab
         className={styles.fab}
         onClick={() => setOpen((o) => !o)}
         title="Opciones de accesibilidad (Alt+M)"
@@ -189,104 +203,177 @@ export default function AccessibilityMenu() {
           </button>
         </header>
 
-        <div className={styles.section}>
-          <h4>Visual</h4>
-          <div className={styles.row}>
-            <span>Escala de texto</span>
-            <div className={styles.controlGroup}>
-              <button className={styles.small} onClick={decreaseText} aria-label="Disminuir tamaño">A-</button>
-              <span aria-live="polite" className={styles.scaleLabel}>{Math.round(state.textScale * 100)}%</span>
-              <button className={styles.small} onClick={increaseText} aria-label="Aumentar tamaño">A+</button>
-              <button className={styles.small} onClick={() => resetPreferences()} aria-label="Restablecer preferencias">Reset</button>
+        <div>
+          <button
+            className={styles.accordionHeader}
+            aria-expanded={activeSection === "visual"}
+            onClick={() => setActiveSection(activeSection === "visual" ? null : "visual")}
+          >
+            <h4>Visual</h4>
+            <span>{activeSection === "visual" ? "−" : "+"}</span>
+          </button>
+          <div className={`${styles.accordionContent} ${activeSection === "visual" ? styles.accordionOpen : ""}`}>
+            <div className={styles.row}>
+              <span>Escala de texto</span>
+              <div className={styles.controlGroup}>
+                <button className={styles.small} onClick={decreaseText} aria-label="Disminuir tamaño">A-</button>
+                <span aria-live="polite" className={styles.scaleLabel}>{Math.round(state.textScale * 100)}%</span>
+                <button className={styles.small} onClick={increaseText} aria-label="Aumentar tamaño">A+</button>
+                <button className={styles.small} onClick={() => resetPreferences()} aria-label="Restablecer preferencias">Reset</button>
+              </div>
+            </div>
+
+            <label className={styles.row}>
+              <input
+                type="checkbox"
+                checked={state.contrast}
+                onChange={(e) => update("contrast", e.target.checked)}
+              />
+              Alto contraste / modo oscuro
+            </label>
+
+            <label className={styles.row}>
+              <input
+                type="checkbox"
+                checked={state.dyslexicFont}
+                onChange={(e) => update("dyslexicFont", e.target.checked)}
+              />
+              Fuente legible (estilo disléxico)
+            </label>
+
+            <div className={styles.row} style={{flexDirection:'column',alignItems:'flex-start'}}>
+              <label style={{width:'100%'}}>Tipo de fuente</label>
+              <select value={state.font || ''} onChange={(e)=> update('font', e.target.value || undefined)} style={{padding:'6px',borderRadius:6}}>
+                <option value="">Sistema (por defecto)</option>
+                <option value="Poppins, system-ui, -apple-system, 'Segoe UI', Roboto, Arial">Poppins</option>
+                <option value="Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial">Inter</option>
+                <option value="'Open Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Arial">Open Sans</option>
+                <option value="Roboto, system-ui, -apple-system, 'Segoe UI', Arial">Roboto</option>
+              </select>
+            </div>
+
+            <div className={styles.row} style={{flexDirection:'column',alignItems:'flex-start'}}>
+              <label>Color personalizado</label>
+              <input type="color" value={state.accentColor || '#79b8ff'} onChange={(e)=> update('accentColor', e.target.value)} />
+            </div>
+
+            <label className={styles.row}>
+              <input type="checkbox" checked={!!state.linkHighlight} onChange={(e)=> update('linkHighlight', e.target.checked)} />
+              Resaltar enlaces y foco visible
+            </label>
+
+            <label className={styles.row}>
+              <input
+                type="checkbox"
+                checked={state.increasedSpacing}
+                onChange={(e) => update("increasedSpacing", e.target.checked)}
+              />
+              Aumentar espaciado entre letras y líneas
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <button
+            className={styles.accordionHeader}
+            aria-expanded={activeSection === "auditiva"}
+            onClick={() => setActiveSection(activeSection === "auditiva" ? null : "auditiva")}
+          >
+            <h4>Auditiva</h4>
+            <span>{activeSection === "auditiva" ? "−" : "+"}</span>
+          </button>
+          <div className={`${styles.accordionContent} ${activeSection === "auditiva" ? styles.accordionOpen : ""}`}>
+            <p className={styles.note}>
+              Herramientas auditivas como subtítulos o transcripción deben
+              activarse por la entidad de media (placeholder).
+            </p>
+            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
+              <button
+                className={styles.small}
+                onClick={() => alert("Funcionalidad de subtítulos (placeholder)")}
+              >
+                Activar subtítulos
+              </button>
+              <button
+                className={styles.small}
+                onClick={() => (speaking ? stopSpeaking() : speakPage())}
+                aria-pressed={speaking}
+              >
+                {speaking ? "Detener lectura" : "Leer página"}
+              </button>
             </div>
           </div>
-
-          <label className={styles.row}>
-            <input
-              type="checkbox"
-              checked={state.contrast}
-              onChange={(e) => update("contrast", e.target.checked)}
-            />
-            Alto contraste / modo oscuro
-          </label>
-
-          <label className={styles.row}>
-            <input
-              type="checkbox"
-              checked={state.dyslexicFont}
-              onChange={(e) => update("dyslexicFont", e.target.checked)}
-            />
-            Fuente legible (estilo disléxico)
-          </label>
-
-          <div className={styles.row} style={{flexDirection:'column',alignItems:'flex-start'}}>
-            <label style={{width:'100%'}}>Tipo de fuente</label>
-            <select value={state.font || ''} onChange={(e)=> update('font', e.target.value || undefined)} style={{padding:'6px',borderRadius:6}}>
-              <option value="">Sistema (por defecto)</option>
-              <option value="Poppins, system-ui, -apple-system, 'Segoe UI', Roboto, Arial">Poppins</option>
-              <option value="Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial">Inter</option>
-              <option value="'Open Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Arial">Open Sans</option>
-              <option value="Roboto, system-ui, -apple-system, 'Segoe UI', Arial">Roboto</option>
-            </select>
-          </div>
-
-          <div className={styles.row} style={{flexDirection:'column',alignItems:'flex-start'}}>
-            <label>Color personalizado</label>
-            <input type="color" value={state.accentColor || '#79b8ff'} onChange={(e)=> update('accentColor', e.target.value)} />
-          </div>
-
-          <label className={styles.row}>
-            <input type="checkbox" checked={!!state.linkHighlight} onChange={(e)=> update('linkHighlight', e.target.checked)} />
-            Resaltar enlaces y foco visible
-          </label>
-
-          <label className={styles.row}>
-            <input
-              type="checkbox"
-              checked={state.increasedSpacing}
-              onChange={(e) => update("increasedSpacing", e.target.checked)}
-            />
-            Aumentar espaciado entre letras y líneas
-          </label>
         </div>
 
-        <div className={styles.section}>
-          <h4>Auditiva</h4>
-          <p className={styles.note}>
-            Herramientas auditivas como subtítulos o transcripción deben
-            activarse por la entidad de media (placeholder).
-          </p>
-          <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
-            <button
-              className={styles.small}
-              onClick={() => alert("Funcionalidad de subtítulos (placeholder)")}
-            >
-              Activar subtítulos
-            </button>
-            <button
-              className={styles.small}
-              onClick={() => (speaking ? stopSpeaking() : speakPage())}
-              aria-pressed={speaking}
-            >
-              {speaking ? "Detener lectura" : "Leer página"}
-            </button>
-          </div>
-        </div>
-
-        <div className={styles.section}>
-          <h4>Motriz</h4>
-          <p className={styles.note}>
-            Atajos y navegación por teclado ya son soportados; use Tab/Enter/Esc.
-            (Opciones avanzadas: placeholder)
-          </p>
+        <div>
           <button
-            className={styles.small}
-            onClick={() =>
-              alert("Activar navegación por teclado (placeholder)")
-            }
+            className={styles.accordionHeader}
+            aria-expanded={activeSection === "motriz"}
+            onClick={() => setActiveSection(activeSection === "motriz" ? null : "motriz")}
           >
-            Configurar atajos (placeholder)
+            <h4>Motriz</h4>
+            <span>{activeSection === "motriz" ? "−" : "+"}</span>
           </button>
+          <div className={`${styles.accordionContent} ${activeSection === "motriz" ? styles.accordionOpen : ""}`}>
+            <p className={styles.note}>
+              Atajos y navegación por teclado ya son soportados; use Tab/Enter/Esc.
+              (Opciones avanzadas: placeholder)
+            </p>
+            <label className={styles.row}>
+              <input type="checkbox" checked={!!state.keyboardNav} onChange={(e)=> update('keyboardNav', e.target.checked)} />
+              Navegación por teclado (Tab / Enter / Esc)
+            </label>
+
+            <label className={styles.row}>
+              <input type="checkbox" checked={!!state.largeButtons} onChange={(e)=> update('largeButtons', e.target.checked)} />
+              Botones grandes
+            </label>
+
+            <div style={{display:'flex',flexDirection:'column',gap:8}}>
+              <label>Atajo: Alternar menú (presiona la combinación en el campo)</label>
+              <input
+                value={state.shortcuts?.toggleMenu || ''}
+                onKeyDown={(e)=>{
+                  e.preventDefault();
+                  const parts = [] as string[];
+                  if(e.ctrlKey) parts.push('ctrl');
+                  if(e.altKey) parts.push('alt');
+                  if(e.shiftKey) parts.push('shift');
+                  const key = (e.key || '').toLowerCase();
+                  if(!['control','alt','shift','meta'].includes(key)) parts.push(key);
+                  const combo = parts.join('+');
+                  update('shortcuts', {...(state.shortcuts||{}), toggleMenu: combo});
+                }}
+                onChange={()=>{}}
+                placeholder="ej: alt+m"
+                style={{padding:6,borderRadius:6}}
+              />
+
+              <label>Atajo: Ir a contenido (skip-to-content)</label>
+              <input
+                value={state.shortcuts?.skipToContent || ''}
+                onKeyDown={(e)=>{
+                  e.preventDefault();
+                  const parts = [] as string[];
+                  if(e.ctrlKey) parts.push('ctrl');
+                  if(e.altKey) parts.push('alt');
+                  if(e.shiftKey) parts.push('shift');
+                  const key = (e.key || '').toLowerCase();
+                  if(!['control','alt','shift','meta'].includes(key)) parts.push(key);
+                  const combo = parts.join('+');
+                  update('shortcuts', {...(state.shortcuts||{}), skipToContent: combo});
+                }}
+                onChange={()=>{}}
+                placeholder="ej: s"
+                style={{padding:6,borderRadius:6}}
+              />
+            </div>
+
+            <label className={styles.row}>
+              <input type="checkbox" checked={!!state.blockAuto} onChange={(e)=> update('blockAuto', e.target.checked)} />
+              Bloquear auto-scroll / auto-reproducción
+            </label>
+          </div>
         </div>
 
         <footer className={styles.footer}>

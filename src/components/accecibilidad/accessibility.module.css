@@ -58,6 +58,28 @@
   padding: 0.5rem;
 }
 
+.accordionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 0.35rem 0.25rem;
+  cursor: pointer;
+}
+
+.accordionContent {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.22s ease;
+  padding-left: 0.25rem;
+}
+
+.accordionOpen {
+  max-height: 1200px;
+}
+
 .row {
   display: flex;
   gap: 0.5rem;
@@ -325,4 +347,22 @@
   background: #0b1220 !important;
   color: #e6eef8 !important;
   box-shadow: 0 6px 16px rgba(0,0,0,0.6) !important;
+}
+
+/* Ensure large controls affect common button classes used across the app */
+:global(:root.a11y-large-controls) .btn-primary,
+:global(html.a11y-large-controls) .btn-primary,
+:global(body.a11y-large-controls) .btn-primary,
+:global(:root.a11y-large-controls) .btn-secondary,
+:global(html.a11y-large-controls) .btn-secondary,
+:global(body.a11y-large-controls) .btn-secondary,
+:global(:root.a11y-large-controls) .btn-login,
+:global(html.a11y-large-controls) .btn-login,
+:global(body.a11y-large-controls) .btn-login,
+:global(:root.a11y-large-controls) button,
+:global(html.a11y-large-controls) button,
+:global(body.a11y-large-controls) button {
+  padding: 0.9rem 1.4rem !important;
+  font-size: 1.05rem !important;
+  border-radius: 10px !important;
 }
