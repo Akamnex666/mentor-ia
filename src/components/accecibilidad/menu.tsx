@@ -135,7 +135,13 @@ export default function AccessibilityMenu() {
   }
 
   function update<K extends keyof A11yState>(key: K, val: A11yState[K]) {
-    setState((s) => ({ ...s, [key]: val }));
+    setState((s) => {
+      const next = { ...s, [key]: val };
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      } catch (e) {}
+      return next;
+    });
   }
 
   function increaseText() {

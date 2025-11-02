@@ -104,14 +104,19 @@ export default function SyncA11y() {
         if(!['control','alt','shift','meta'].includes(key)) parts.push(key);
         const combo = parts.join('+');
         if(prefs.shortcuts && prefs.shortcuts.toggleMenu && combo === prefs.shortcuts.toggleMenu) {
+          e.preventDefault();
           const btn = document.querySelector('[data-a11y-fab]') as HTMLElement | null;
           if(btn) btn.click();
         }
         if(prefs.shortcuts && prefs.shortcuts.skipToContent && combo === prefs.shortcuts.skipToContent) {
-          const target = document.getElementById('inicio') || document.querySelector('main');
-          if(target) {
-            try{ (target as HTMLElement).focus(); }catch(e){}
-            try{ (target as HTMLElement).scrollIntoView({behavior:'smooth'}); }catch(e){}
+          e.preventDefault();
+          const target = document.getElementById('inicio') || document.querySelector('main, [role="main"], #content');
+          if(target instanceof HTMLElement) {
+            try {
+              if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex','-1');
+              target.focus({preventScroll:false});
+            } catch(err) {}
+            try { target.scrollIntoView({behavior:'smooth'}); } catch(e) {}
           }
         }
       } catch(e){}
@@ -141,9 +146,11 @@ export default function SyncA11y() {
     };
     window.addEventListener("storage", onStorage);
     window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener("storage", onStorage);
-      window.removeEventListener('keydown', handleKey);
-      disableBlockAuto();
+    return () => {
+      try { window.removeEventListener("storage", onStorage); } catch(e) {}
+      try { window.removeEventListener('keydown', handleKey); } catch(e) {}
+      try { disableBlockAuto(); } catch(e) {}
+    };
   }, []);
 
   return null;
