@@ -55,7 +55,7 @@ export default function ResetPasswordPage() {
 
       setSuccess(true);
       toast.push({ type: "success", message: "Contraseña actualizada correctamente" });
-      
+
       // Redirigir al login después de 2 segundos
       setTimeout(() => {
         router.push("/auth/login");
@@ -120,23 +120,23 @@ export default function ResetPasswordPage() {
       </header>
 
       <main className="auth-container">
-        <div className="auth-card" style={{ 
-          maxWidth: '1000px', 
-          display: 'grid', 
+        <div className="auth-card" style={{
+          maxWidth: '1000px',
+          display: 'grid',
           gridTemplateColumns: '1fr 1fr',
           minHeight: '600px'
         }}>
           <div style={{ padding: '3rem', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            
+
             {success ? (
               <div style={{ textAlign: 'center' }}>
-                <div style={{ 
-                  width: '80px', 
-                  height: '80px', 
-                  background: '#d1fae5', 
-                  borderRadius: '50%', 
-                  display: 'flex', 
-                  alignItems: 'center', 
+                <div style={{
+                  width: '80px',
+                  height: '80px',
+                  background: '#d1fae5',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
                   justifyContent: 'center',
                   margin: '0 auto 1.5rem',
                   color: '#10b981',
@@ -174,18 +174,18 @@ export default function ResetPasswordPage() {
                       Nueva contraseña
                     </label>
                     <div style={{ position: 'relative' }}>
-                      <i className="fas fa-lock" style={{ 
-                        position: 'absolute', 
-                        left: '1rem', 
-                        top: '50%', 
-                        transform: 'translateY(-50%)', 
-                        color: '#6b7280' 
+                      <i className="fas fa-lock" style={{
+                        position: 'absolute',
+                        left: '1rem',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        color: '#6b7280'
                       }}></i>
-                      <input 
+                      <input
                         type={showPassword ? "text" : "password"}
-                        value={password} 
-                        onChange={(e) => setPassword(e.target.value)} 
-                        required 
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
                         placeholder="Mínimo 6 caracteres"
                         className="auth-input"
                         style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem', width: '100%' }}
@@ -214,18 +214,18 @@ export default function ResetPasswordPage() {
                       Confirmar contraseña
                     </label>
                     <div style={{ position: 'relative' }}>
-                      <i className="fas fa-lock" style={{ 
-                        position: 'absolute', 
-                        left: '1rem', 
-                        top: '50%', 
-                        transform: 'translateY(-50%)', 
-                        color: '#6b7280' 
+                      <i className="fas fa-lock" style={{
+                        position: 'absolute',
+                        left: '1rem',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        color: '#6b7280'
                       }}></i>
-                      <input 
+                      <input
                         type={showConfirmPassword ? "text" : "password"}
-                        value={confirmPassword} 
-                        onChange={(e) => setConfirmPassword(e.target.value)} 
-                        required 
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        required
                         placeholder="Repite tu contraseña"
                         className="auth-input"
                         style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem', width: '100%' }}
@@ -256,8 +256,8 @@ export default function ResetPasswordPage() {
                     </div>
                   )}
 
-                  <button 
-                    type="submit" 
+                  <button
+                    type="submit"
                     className="btn-primary"
                     disabled={loading}
                     style={{ width: '100%', marginTop: '0.5rem' }}
@@ -289,7 +289,7 @@ export default function ResetPasswordPage() {
           </div>
 
           {/* Hero Visual */}
-          <div style={{ 
+          <div style={{
             background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
             display: 'flex',
             alignItems: 'center',
@@ -297,7 +297,7 @@ export default function ResetPasswordPage() {
             position: 'relative',
             overflow: 'hidden'
           }}>
-            <div className="hero-illustration" style={{ 
+            <div className="hero-illustration" style={{
               background: 'rgba(255, 255, 255, 0.1)',
               backdropFilter: 'blur(10px)',
               width: '180px',

@@ -52,7 +52,7 @@ export default function DashboardPage() {
           <nav className="nav-menu">
             <ul>
               <li>
-                <button 
+                <button
                   className={`nav-tab ${activeTab === "inicio" ? "active" : ""}`}
                   onClick={() => setActiveTab("inicio")}
                 >
@@ -60,7 +60,7 @@ export default function DashboardPage() {
                 </button>
               </li>
               <li>
-                <button 
+                <button
                   className={`nav-tab ${activeTab === "generar" ? "active" : ""}`}
                   onClick={() => setActiveTab("generar")}
                 >
@@ -68,7 +68,7 @@ export default function DashboardPage() {
                 </button>
               </li>
               <li>
-                <button 
+                <button
                   className={`nav-tab ${activeTab === "contenidos" ? "active" : ""}`}
                   onClick={() => setActiveTab("contenidos")}
                 >
@@ -76,7 +76,7 @@ export default function DashboardPage() {
                 </button>
               </li>
               <li>
-                <button 
+                <button
                   className={`nav-tab ${activeTab === "estadisticas" ? "active" : ""}`}
                   onClick={() => setActiveTab("estadisticas")}
                 >
@@ -152,7 +152,7 @@ export default function DashboardPage() {
 
         {/* Contenido Principal del Dashboard */}
         <div className="dashboard-content">
-          
+
           {/* Sección de Generación Rápida */}
           {activeTab === "inicio" && (
             <div className="tab-content">
@@ -160,7 +160,7 @@ export default function DashboardPage() {
                 <h2>Generación Rápida</h2>
                 <p>Crea nuevo contenido educativo en segundos</p>
               </div>
-              
+
               <div className="features-grid">
                 <div className="feature-card">
                   <div className="card-icon">
@@ -218,7 +218,7 @@ export default function DashboardPage() {
                       </button>
                     </div>
                   </div>
-                  
+
                   <div className="content-item">
                     <div className="content-icon">
                       <i className="fas fa-question-circle"></i>
@@ -248,7 +248,7 @@ export default function DashboardPage() {
                 <h2>Generar Nuevo Contenido</h2>
                 <p>Selecciona el tipo de contenido educativo que deseas crear</p>
               </div>
-              
+
               <div className="generation-options">
                 <div className="generation-card">
                   <div className="generation-header">
@@ -309,14 +309,14 @@ export default function DashboardPage() {
                 <h2>Mis Contenidos Educativos</h2>
                 <p>Gestiona y organiza todo tu material creado</p>
               </div>
-              
+
               <div className="content-filters">
                 <button className="filter-btn active">Todos</button>
                 <button className="filter-btn">Resúmenes</button>
                 <button className="filter-btn">Cuestionarios</button>
                 <button className="filter-btn">Materiales</button>
               </div>
-              
+
               <div className="content-list">
                 <div className="content-item detailed">
                   <div className="content-icon large">
@@ -340,7 +340,7 @@ export default function DashboardPage() {
                     </button>
                   </div>
                 </div>
-                
+
                 <div className="content-item detailed">
                   <div className="content-icon large">
                     <i className="fas fa-question-circle"></i>
@@ -374,7 +374,7 @@ export default function DashboardPage() {
                 <h2>Estadísticas de Uso</h2>
                 <p>Mide el impacto de tus contenidos educativos</p>
               </div>
-              
+
               <div className="stats-grid">
                 <div className="stat-card large">
                   <h3>Contenidos Más Populares</h3>
@@ -393,7 +393,7 @@ export default function DashboardPage() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="stat-card large">
                   <h3>Progreso Mensual</h3>
                   <div className="progress-chart">
@@ -405,7 +405,7 @@ export default function DashboardPage() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="achievements">
                 <h3 style={{ marginBottom: '1.5rem' }}>Logros</h3>
                 <div className="achievement-grid">
