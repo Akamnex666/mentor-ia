@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 
@@ -90,12 +91,17 @@ export default function DashboardPage() {
               <i className="fas fa-user-circle"></i>
               <span>{user?.user_metadata?.full_name || user?.email}</span>
             </div>
-            <button
-              className="btn-login"
-              onClick={handleLogout}
-            >
-              <i className="fas fa-sign-out-alt"></i> Cerrar Sesión
-            </button>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <Link href="/profile" className="auth-link" style={{ paddingRight: 8 }}>
+                <i className="fas fa-user"></i> Perfil
+              </Link>
+              <button
+                className="btn-login"
+                onClick={handleLogout}
+              >
+                <i className="fas fa-sign-out-alt"></i> Cerrar Sesión
+              </button>
+            </div>
           </div>
         </div>
       </header>

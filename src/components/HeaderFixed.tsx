@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
@@ -28,7 +28,7 @@ export default function Header() {
       setUser(session?.user ?? null);
     });
 
-    const onDoc = (e) => {
+    const onDoc = (e: MouseEvent) => {
       if (!ref.current) return;
       if (!ref.current.contains(e.target as Node)) setOpen(false);
     };
@@ -36,7 +36,9 @@ export default function Header() {
 
     return () => {
       mounted = false;
-      try { sub?.subscription?.unsubscribe(); } catch (e) {}
+      try {
+        sub?.subscription?.unsubscribe();
+      } catch (e) {}
       document.removeEventListener("click", onDoc);
     };
   }, []);
@@ -44,8 +46,9 @@ export default function Header() {
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     setUser(null);
-    setOpen(false);
-    try { toast.push({ type: "info", message: "Has cerrado sesión" }); } catch (e) {}
+    try {
+      toast.push({ type: "info", message: "Has cerrado sesión" });
+    } catch (e) {}
     router.push("/");
   };
 
@@ -62,12 +65,19 @@ export default function Header() {
         <div className="flex items-center gap-4 header-right" ref={ref}>
           {!user ? (
             <>
-              <Link href="/auth/login" className="auth-link">Entrar</Link>
-              <Link href="/auth/register" className="btn-register">Registrarse</Link>
+              <Link href="/auth/login" className="auth-link">
+                Entrar
+              </Link>
+              <Link href="/auth/register" className="btn-register">
+                Registrarse
+              </Link>
             </>
           ) : (
             <div className="flex items-center gap-3">
-              <Link href="/profile" className="profile-btn"><span className="profile-name">Perfil</span></Link>
+              <Link href="/profile" className="profile-btn">
+                <span className="profile-name">Perfil</span>
+              </Link>
+
               <button onClick={handleSignOut} className="btn-logout" title="Cerrar sesión">
                 <i className="fas fa-sign-out-alt"></i>
               </button>
