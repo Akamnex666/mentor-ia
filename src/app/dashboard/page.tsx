@@ -3,15 +3,17 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 
 export default function DashboardPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("inicio");
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
   const dropdownRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -37,6 +39,34 @@ export default function DashboardPage() {
     setDropdownOpen(false);
     router.push("/auth/login");
   };
+
+  // Función para filtrar contenido según búsqueda
+  const filterContent = (text: string, query: string) => {
+    return text.toLowerCase().includes(query.toLowerCase());
+  };
+
+  const shouldShowInitTab = 
+    !searchQuery.trim() || 
+    filterContent("Generación Rápida", searchQuery) ||
+    filterContent("Resumen Inteligente", searchQuery) ||
+    filterContent("Cuestionario Adaptativo", searchQuery) ||
+    filterContent("Material Didáctico", searchQuery) ||
+    filterContent("Historia del Arte", searchQuery) ||
+    filterContent("Matemáticas Básicas", searchQuery);
+
+  const shouldShowGenTab =
+    !searchQuery.trim() ||
+    filterContent("Generar Nuevo Contenido", searchQuery) ||
+    filterContent("Resumen Inteligente", searchQuery) ||
+    filterContent("Cuestionario Adaptativo", searchQuery) ||
+    filterContent("Material Didáctico", searchQuery);
+
+  const shouldShowContenidosTab =
+    !searchQuery.trim() ||
+    filterContent("Revolución Industrial", searchQuery) ||
+    filterContent("Álgebra Básica", searchQuery) ||
+    filterContent("Resumen", searchQuery) ||
+    filterContent("Quiz", searchQuery);
 
   if (loading) {
     return (
@@ -94,8 +124,11 @@ export default function DashboardPage() {
             <i className="fas fa-search header-search-icon"></i>
             <input 
               type="text" 
-              placeholder="Buscar cursos, recursos..." 
+              placeholder="Buscar..." 
               className="header-search-input"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              spellCheck="false"
             />
           </div>
 
@@ -150,7 +183,7 @@ export default function DashboardPage() {
         <div className="dashboard-content">
 
           {/* Sección de Generación Rápida */}
-          {activeTab === "inicio" && (
+          {activeTab === "inicio" && shouldShowInitTab && (
             <div className="tab-content">
               <div className="section-header">
                 <h2>Generación Rápida</h2>
@@ -238,7 +271,7 @@ export default function DashboardPage() {
           )}
 
           {/* Sección de Generación de Contenido */}
-          {activeTab === "generar" && (
+          {activeTab === "generar" && shouldShowGenTab && (
             <div className="tab-content">
               <div className="section-header">
                 <h2>Generar Nuevo Contenido</h2>
@@ -299,7 +332,7 @@ export default function DashboardPage() {
           )}
 
           {/* Sección de Mis Contenidos */}
-          {activeTab === "contenidos" && (
+          {activeTab === "contenidos" && shouldShowContenidosTab && (
             <div className="tab-content">
               <div className="section-header">
                 <h2>Mis Contenidos Educativos</h2>
@@ -427,6 +460,28 @@ export default function DashboardPage() {
                     <p>Promedio 4.5+ estrellas</p>
                   </div>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* Mensaje de sin resultados */}
+          {searchQuery.trim() && !shouldShowInitTab && !shouldShowGenTab && !shouldShowContenidosTab && (
+            <div className="tab-content">
+              <div style={{
+                textAlign: 'center',
+                padding: '3rem',
+                color: '#6b7280'
+              }}>
+                <i className="fas fa-search" style={{ fontSize: '3rem', marginBottom: '1rem', color: '#d1d5db' }}></i>
+                <h3 style={{ marginTop: '1rem', color: '#374151' }}>Sin resultados</h3>
+                <p>No encontramos contenido que coincida con "<strong>{searchQuery}</strong>"</p>
+                <button 
+                  onClick={() => setSearchQuery("")}
+                  className="btn-primary"
+                  style={{ marginTop: '1.5rem' }}
+                >
+                  Limpiar búsqueda
+                </button>
               </div>
             </div>
           )}

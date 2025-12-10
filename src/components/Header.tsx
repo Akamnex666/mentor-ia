@@ -9,6 +9,7 @@ import { useToast } from "../providers/ToastProvider";
 export default function Header() {
     const [user, setUser] = useState<any | null>(null);
     const [open, setOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
     const toast = useToast();
     const router = useRouter();
     const ref = useRef<HTMLDivElement | null>(null);
@@ -49,6 +50,12 @@ export default function Header() {
         router.push("/");
     };
 
+    const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter' && searchQuery.trim()) {
+            router.push(`/dashboard?search=${encodeURIComponent(searchQuery)}`);
+        }
+    };
+
     return (
         <header className="site-header">
             <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -64,8 +71,12 @@ export default function Header() {
                         <i className="fas fa-search header-search-icon"></i>
                         <input 
                             type="text" 
-                            placeholder="Buscar cursos, recursos..." 
+                            placeholder="Buscar..." 
                             className="header-search-input"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onKeyPress={handleSearch}
+                            spellCheck="false"
                         />
                     </div>
                 )}
