@@ -836,6 +836,7 @@ body {
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -895,20 +896,26 @@ body {
 /* Header Search Bar */
 .header-search-container {
   position: relative;
-  flex: 1;
-  max-width: 500px;
+  width: 300px;
+  height: 40px;
   margin: 0 2rem;
+  display: inline-flex;
+  align-items: center;
 }
 
 .header-search-input {
   width: 100%;
+  height: 100%;
   padding: 0.6rem 1rem 0.6rem 2.5rem;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   font-size: 0.875rem;
   outline: none;
-  transition: all 0.3s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
   background: #f9fafb;
+  box-sizing: border-box;
+  font-family: inherit;
+  line-height: 1.5;
 }
 
 .header-search-input:focus {
@@ -921,6 +928,10 @@ body {
   color: #9ca3af;
 }
 
+.header-search-input::-webkit-search-cancel-button {
+  display: none;
+}
+
 .header-search-icon {
   position: absolute;
   left: 0.75rem;
@@ -928,6 +939,8 @@ body {
   transform: translateY(-50%);
   color: #9ca3af;
   font-size: 0.875rem;
+  pointer-events: none;
+  z-index: 1;
   pointer-events: none;
 }
 
@@ -1867,7 +1880,7 @@ body {
   .profile-grid-container {
     grid-template-columns: 1fr;
   }
-  
+
   .profile-sidebar-card {
     position: static;
   }
@@ -1877,11 +1890,11 @@ body {
   .profile-container {
     padding: 6rem 1rem 1rem;
   }
-  
+
   .profile-main-card {
     padding: 1.5rem;
   }
-  
+
   .profile-form-actions {
     flex-direction: column;
   }

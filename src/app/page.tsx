@@ -9,11 +9,49 @@ import "../styles/globals.css"; // tus estilos principales
 export default function HomePage() {
   const [activeFAQ, setActiveFAQ] = useState<number | null>(null);
   const [showVideoModal, setShowVideoModal] = useState(false);
+  const [contactForm, setContactForm] = useState({
+    name: '',
+    email: '',
+    message: ''
+  });
+  const [contactLoading, setContactLoading] = useState(false);
+  const [contactMessage, setContactMessage] = useState('');
   const router = useRouter();
   const { t } = useLanguage();
 
   const toggleFAQ = (index: number) => {
     setActiveFAQ(activeFAQ === index ? null : index);
+  };
+
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!contactForm.name || !contactForm.email || !contactForm.message) {
+      setContactMessage('Por favor completa todos los campos');
+      return;
+    }
+
+    setContactLoading(true);
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(contactForm)
+      });
+
+      if (response.ok) {
+        setContactMessage('¡Mensaje enviado exitosamente! Nos pondremos en contacto pronto.');
+        setContactForm({ name: '', email: '', message: '' });
+        setTimeout(() => setContactMessage(''), 5000);
+      } else {
+        setContactMessage('Error al enviar el mensaje. Intenta nuevamente.');
+      }
+    } catch (error) {
+      setContactMessage('Error de conexión. Por favor intenta más tarde.');
+      console.error(error);
+    } finally {
+      setContactLoading(false);
+    }
   };
 
   return (
@@ -34,19 +72,19 @@ export default function HomePage() {
           <nav className="nav-menu">
             <ul>
               <li>
-                <button onClick={() => document.getElementById('inicio')?.scrollIntoView({ behavior: 'smooth' })}>
+                <a href="#inicio" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}>
                   <i className="fas fa-home"></i> {t('nav.home')}
-                </button>
+                </a>
               </li>
               <li>
-                <button onClick={() => document.getElementById('generar')?.scrollIntoView({ behavior: 'smooth' })}>
+                <a href="#generar" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}>
                   <i className="fas fa-magic"></i> {t('nav.generate')}
-                </button>
+                </a>
               </li>
               <li>
-                <button onClick={() => document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' })}>
+                <a href="#contacto" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}>
                   <i className="fas fa-envelope"></i> {t('nav.contact')}
-                </button>
+                </a>
               </li>
             </ul>
           </nav>
@@ -196,18 +234,16 @@ export default function HomePage() {
             ].map((faq, i) => (
               <div key={i} className="faq-item">
                 <button
-                  className={`faq-question ${
-                    activeFAQ === i ? "active" : ""
-                  }`}
+                  className={`faq-question ${activeFAQ === i ? "active" : ""
+                    }`}
                   onClick={() => toggleFAQ(i)}
                 >
                   <span>{faq.q}</span>
                   <i className="fas fa-chevron-down"></i>
                 </button>
                 <div
-                  className={`faq-answer ${
-                    activeFAQ === i ? "open" : "closed"
-                  }`}
+                  className={`faq-answer ${activeFAQ === i ? "open" : "closed"
+                    }`}
                 >
                   <p>{faq.a}</p>
                 </div>
@@ -219,22 +255,139 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="footer" id="contacto">
-        <div className="footer-container">
-          <div>
-            <div className="footer-logo">
-              <i className="fas fa-graduation-cap"></i> MentorIA
+        <div className="footer-container" style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
+
+          {/* Sección principal del footer */}
+          <div style={{ display: 'flex', gap: '3rem', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+
+            {/* Columna 1: Logo */}
+            <div style={{ flex: '1', minWidth: '250px' }}>
+              <div className="footer-logo" style={{ marginBottom: '1rem' }}>
+                <i className="fas fa-graduation-cap"></i> MentorIA
+              </div>
+              <p style={{ color: 'rgba(255,255,255,0.8)', lineHeight: '1.6' }}>
+                Transformando la educación con inteligencia artificial para el mundo.
+              </p>
             </div>
-            <p>Transformando la educación con inteligencia artificial.</p>
+
+            {/* Columna 2: Contacto */}
+            <div style={{ flex: '1', minWidth: '250px' }}>
+              <h4 style={{ color: '#fff', marginBottom: '1rem', fontSize: '1rem', fontWeight: 700 }}>Contacto Directo</h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <p style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'rgba(255,255,255,0.8)' }}>
+                  <i className="fas fa-envelope" style={{ width: '20px' }}></i>
+                  <a href="mailto:contacto@mentoria.com" style={{ color: 'inherit', textDecoration: 'none' }}>contacto@mentoria.com</a>
+                </p>
+                <p style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'rgba(255,255,255,0.8)' }}>
+                  <i className="fas fa-phone" style={{ width: '20px' }}></i>
+                  <a href="tel:+593912345678" style={{ color: 'inherit', textDecoration: 'none' }}>+593 91 234 5678</a>
+                </p>
+                <p style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'rgba(255,255,255,0.8)' }}>
+                  <i className="fas fa-map-marker-alt" style={{ width: '20px' }}></i>
+                  Manta, Ecuador
+                </p>
+              </div>
+            </div>
+
+            {/* Columna 3: Formulario de contacto */}
+            <div style={{ flex: '1', minWidth: '280px', maxWidth: '350px' }}>
+              <h4 style={{ color: '#fff', marginBottom: '1rem', fontSize: '1rem', fontWeight: 700 }}>Envíanos un Mensaje</h4>
+              <form onSubmit={handleContactSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <input
+                  type="text"
+                  placeholder="Tu nombre"
+                  value={contactForm.name}
+                  onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
+                  required
+                  style={{
+                    padding: '0.6rem',
+                    borderRadius: '0.4rem',
+                    border: 'none',
+                    background: 'rgba(255, 255, 255, 0.95)',
+                    fontSize: '0.9rem',
+                    fontFamily: 'inherit'
+                  }}
+                />
+                <input
+                  type="email"
+                  placeholder="Tu email"
+                  value={contactForm.email}
+                  onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
+                  required
+                  style={{
+                    padding: '0.6rem',
+                    borderRadius: '0.4rem',
+                    border: 'none',
+                    background: 'rgba(255, 255, 255, 0.95)',
+                    fontSize: '0.9rem',
+                    fontFamily: 'inherit'
+                  }}
+                />
+                <textarea
+                  placeholder="Tu mensaje"
+                  value={contactForm.message}
+                  onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
+                  rows={3}
+                  required
+                  style={{
+                    padding: '0.6rem',
+                    borderRadius: '0.4rem',
+                    border: 'none',
+                    background: 'rgba(255, 255, 255, 0.95)',
+                    fontSize: '0.9rem',
+                    resize: 'none',
+                    fontFamily: 'inherit'
+                  }}
+                />
+                {contactMessage && (
+                  <div
+                    style={{
+                      padding: '0.6rem',
+                      borderRadius: '0.4rem',
+                      background: contactMessage.includes('Error') ? 'rgba(239, 68, 68, 0.3)' : 'rgba(34, 197, 94, 0.3)',
+                      color: contactMessage.includes('Error') ? '#fca5a5' : '#86efac',
+                      fontSize: '0.85rem',
+                      textAlign: 'center',
+                      fontWeight: 500
+                    }}
+                  >
+                    {contactMessage}
+                  </div>
+                )}
+                <button
+                  type="submit"
+                  disabled={contactLoading}
+                  style={{
+                    padding: '0.6rem',
+                    background: contactLoading ? '#999' : 'linear-gradient(135deg, #ec4899 0%, #f43f5e 100%)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '0.4rem',
+                    fontSize: '0.9rem',
+                    fontWeight: 700,
+                    cursor: contactLoading ? 'not-allowed' : 'pointer',
+                    opacity: contactLoading ? 0.7 : 1,
+                    transition: 'all 0.3s ease'
+                  }}
+                >
+                  {contactLoading ? 'Enviando...' : 'Enviar'}
+                </button>
+              </form>
+            </div>
+
           </div>
-          <div className="footer-contact">
-            <h4>Contacto</h4>
-            <p><i className="fas fa-envelope"></i> contacto@mentoria.com</p>
-            <p><i className="fas fa-phone"></i> +593 91 234 5678</p>
-            <p><i className="fas fa-map-marker-alt"></i> Manta, Ecuador</p>
-          </div>
-          <div className="footer-copy">
+
+          {/* Copyright */}
+          <div style={{
+            borderTop: '1px solid rgba(255,255,255,0.1)',
+            paddingTop: '2rem',
+            textAlign: 'center',
+            color: 'rgba(255,255,255,0.6)',
+            fontSize: '0.9rem'
+          }}>
             © 2025 MentorIA — Todos los derechos reservados.
           </div>
+
         </div>
       </footer>
 
