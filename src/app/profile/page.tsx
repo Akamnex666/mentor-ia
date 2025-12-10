@@ -167,18 +167,6 @@ export default function ProfilePage() {
                         <div className="profile-role-badge">
                             {role === 'student' ? '👨‍🎓 Estudiante' : role === 'teacher' ? '👨‍🏫 Profesor' : '👤 Otro'}
                         </div>
-
-                        {/* Stats */}
-                        <div className="profile-stats-grid">
-                            <div className="profile-stat-item">
-                                <p className="profile-stat-number">0</p>
-                                <p className="profile-stat-label">Cursos</p>
-                            </div>
-                            <div className="profile-stat-item">
-                                <p className="profile-stat-number">0</p>
-                                <p className="profile-stat-label">Certificados</p>
-                            </div>
-                        </div>
                     </div>
 
                     {/* Sign Out Button */}

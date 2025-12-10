@@ -59,18 +59,52 @@ export default function Header() {
                     </Link>
                 </div>
 
-                <div className="flex items-center gap-4 header-right" ref={ref}>
+                {user && (
+                    <div className="header-search-container">
+                        <i className="fas fa-search header-search-icon"></i>
+                        <input 
+                            type="text" 
+                            placeholder="Buscar cursos, recursos..." 
+                            className="header-search-input"
+                        />
+                    </div>
+                )}
+
+                <div className="flex items-center gap-4 header-right">
                     {!user ? (
                         <>
                             <Link href="/auth/login" className="auth-link">Entrar</Link>
                             <Link href="/auth/register" className="btn-register">Registrarse</Link>
                         </>
                     ) : (
-                        <div className="flex items-center gap-3">
-                            <Link href="/profile" className="profile-btn"><span className="profile-name">Perfil</span></Link>
-                            <button onClick={handleSignOut} className="btn-logout" title="Cerrar sesión">
-                                <i className="fas fa-sign-out-alt"></i>
+                        <div className="user-dropdown-container" ref={ref}>
+                            <button 
+                                className="user-avatar-button"
+                                onClick={() => setOpen(!open)}
+                            >
+                                <div className="user-avatar">
+                                    {user?.email?.[0].toUpperCase() || 'U'}
+                                </div>
+                                <i className={`fas fa-chevron-down dropdown-icon ${open ? 'open' : ''}`}></i>
                             </button>
+                            
+                            {open && (
+                                <div className="user-dropdown-menu">
+                                    <div className="dropdown-header">
+                                        <p className="dropdown-email">{user?.email}</p>
+                                    </div>
+                                    <div className="dropdown-divider"></div>
+                                    <Link href="/profile" className="dropdown-item" onClick={() => setOpen(false)}>
+                                        <i className="fas fa-user"></i>
+                                        <span>Mi Perfil</span>
+                                    </Link>
+                                    <div className="dropdown-divider"></div>
+                                    <button onClick={handleSignOut} className="dropdown-item logout">
+                                        <i className="fas fa-sign-out-alt"></i>
+                                        <span>Cerrar sesión</span>
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>

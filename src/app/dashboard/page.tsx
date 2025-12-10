@@ -11,6 +11,8 @@ export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("inicio");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const getUser = async () => {
@@ -19,10 +21,20 @@ export default function DashboardPage() {
       setLoading(false);
     };
     getUser();
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    setDropdownOpen(false);
     router.push("/auth/login");
   };
 
@@ -75,33 +87,46 @@ export default function DashboardPage() {
                   <i className="fas fa-folder"></i> Mis Contenidos
                 </button>
               </li>
-              <li>
-                <button
-                  className={`nav-tab ${activeTab === "estadisticas" ? "active" : ""}`}
-                  onClick={() => setActiveTab("estadisticas")}
-                >
-                  <i className="fas fa-chart-bar"></i> Estadísticas
-                </button>
-              </li>
             </ul>
           </nav>
 
-          <div className="user-menu">
-            <div className="user-info">
-              <i className="fas fa-user-circle"></i>
-              <span>{user?.user_metadata?.full_name || user?.email}</span>
-            </div>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <Link href="/profile" className="auth-link" style={{ paddingRight: 8 }}>
-                <i className="fas fa-user"></i> Perfil
-              </Link>
-              <button
-                className="btn-login"
-                onClick={handleLogout}
-              >
-                <i className="fas fa-sign-out-alt"></i> Cerrar Sesión
-              </button>
-            </div>
+          <div className="header-search-container" style={{ maxWidth: '350px' }}>
+            <i className="fas fa-search header-search-icon"></i>
+            <input 
+              type="text" 
+              placeholder="Buscar cursos, recursos..." 
+              className="header-search-input"
+            />
+          </div>
+
+          <div className="user-dropdown-container" ref={dropdownRef}>
+            <button 
+              className="user-avatar-button"
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+            >
+              <div className="user-avatar">
+                {user?.email?.[0].toUpperCase() || 'U'}
+              </div>
+              <i className={`fas fa-chevron-down dropdown-icon ${dropdownOpen ? 'open' : ''}`}></i>
+            </button>
+            
+            {dropdownOpen && (
+              <div className="user-dropdown-menu">
+                <div className="dropdown-header">
+                  <p className="dropdown-email">{user?.email}</p>
+                </div>
+                <div className="dropdown-divider"></div>
+                <Link href="/profile" className="dropdown-item" onClick={() => setDropdownOpen(false)}>
+                  <i className="fas fa-user"></i>
+                  <span>Mi Perfil</span>
+                </Link>
+                <div className="dropdown-divider"></div>
+                <button onClick={handleLogout} className="dropdown-item logout">
+                  <i className="fas fa-sign-out-alt"></i>
+                  <span>Cerrar sesión</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </header>
@@ -118,35 +143,6 @@ export default function DashboardPage() {
               !
             </h1>
             <p>Continúa transformando la educación con inteligencia artificial</p>
-          </div>
-          <div className="quick-stats">
-            <div className="stat-card">
-              <div className="stat-icon">
-                <i className="fas fa-file-alt"></i>
-              </div>
-              <div className="stat-content">
-                <span className="stat-number">12</span>
-                <span className="stat-label">Contenidos Creados</span>
-              </div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-icon">
-                <i className="fas fa-users"></i>
-              </div>
-              <div className="stat-content">
-                <span className="stat-number">45</span>
-                <span className="stat-label">Estudiantes</span>
-              </div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-icon">
-                <i className="fas fa-star"></i>
-              </div>
-              <div className="stat-content">
-                <span className="stat-number">98%</span>
-                <span className="stat-label">Satisfacción</span>
-              </div>
-            </div>
           </div>
         </div>
 
