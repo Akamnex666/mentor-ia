@@ -2,6 +2,7 @@
 import type { Metadata } from "next";
 import "../styles/globals.css"; // acá va tu CSS global (lo que era styles.css en el HTML)
 import ToastProvider from "../providers/ToastProvider";
+import { LanguageProvider } from "../contexts/LanguageContext";
 import { Poppins, Inter } from "next/font/google";
 import AccessibilityMenu from "../components/accecibilidad/menu";
 import SyncA11y from "../components/accecibilidad/SyncA11y";
@@ -43,25 +44,27 @@ export default function RootLayout({
       </head>
 
       <body>
-        <ToastProvider>
-          {/* Sync saved a11y prefs early so layout elements render correctly */}
-          <SyncA11y />
+        <LanguageProvider>
+          <ToastProvider>
+            {/* Sync saved a11y prefs early so layout elements render correctly */}
+            <SyncA11y />
 
-          {children}
+            {children}
 
-          {/* Menú de accesibilidad (siempre disponible) */}
-          <AccessibilityMenu />
+            {/* Menú de accesibilidad (siempre disponible) */}
+            <AccessibilityMenu />
 
-          <footer className="w-full border-t mt-8 p-4 text-sm text-center text-gray-600">
-            <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2">
-              <div>© {new Date().getFullYear()} MentorIA</div>
-              <div className="flex gap-4">
-                <a href="/terms" className="underline">Términos de uso</a>
-                <a href="/privacy" className="underline">Política de privacidad</a>
+            <footer className="w-full border-t mt-8 p-4 text-sm text-center text-gray-600">
+              <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2">
+                <div>© {new Date().getFullYear()} MentorIA</div>
+                <div className="flex gap-4">
+                  <a href="/terms" className="underline">Términos de uso</a>
+                  <a href="/privacy" className="underline">Política de privacidad</a>
+                </div>
               </div>
-            </div>
-          </footer>
-        </ToastProvider>
+            </footer>
+          </ToastProvider>
+        </LanguageProvider>
       </body>
 
     </html>

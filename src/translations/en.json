@@ -1,0 +1,139 @@
+{
+  "nav": {
+    "home": "Home",
+    "generate": "Generate Content",
+    "plans": "Plans",
+    "contact": "Contact",
+    "login": "Login"
+  },
+  "hero": {
+    "badge": "AI Powered",
+    "title": "Transform education with",
+    "titleHighlight": "Artificial Intelligence",
+    "subtitle": "Create personalized educational content, smart summaries, and adaptive quizzes that adjust to each student's level. The future of education is here.",
+    "ctaPrimary": "Get Started Free",
+    "ctaSecondary": "What is AI?",
+    "stats": {
+      "educators": "Educators",
+      "students": "Students",
+      "satisfaction": "Satisfaction"
+    }
+  },
+  "features": {
+    "badge": "Features",
+    "title": "Everything you need to revolutionize your teaching",
+    "summary": {
+      "title": "Smart Summaries",
+      "description": "Generate concise and accurate summaries of any educational content instantly.",
+      "cta": "Try now"
+    },
+    "quiz": {
+      "title": "Adaptive Quizzes",
+      "description": "Create personalized assessments that adapt to your students' level.",
+      "cta": "Try now",
+      "badge": "Popular"
+    },
+    "material": {
+      "title": "Learning Materials",
+      "description": "Automatically produce study guides, exercises, and educational resources.",
+      "cta": "Try now"
+    }
+  },
+  "generator": {
+    "badge": "AI Generator",
+    "title": "Choose the type of content you want to create",
+    "types": {
+      "summary": "Summary",
+      "quiz": "Quiz",
+      "material": "Material"
+    },
+    "placeholder": "Enter the topic or paste content here...",
+    "button": "Generate",
+    "outputPlaceholder": "Your generated content will appear here"
+  },
+  "pricing": {
+    "badge": "Plans",
+    "title": "Choose the perfect plan for you",
+    "free": {
+      "name": "Free",
+      "price": "0",
+      "period": "/month",
+      "features": [
+        "5 generations per day",
+        "Basic summaries",
+        "Simple quizzes",
+        "Email support"
+      ],
+      "cta": "Start Free"
+    },
+    "pro": {
+      "name": "Pro",
+      "price": "9.99",
+      "period": "/month",
+      "badge": "Most Popular",
+      "features": [
+        "Unlimited generations",
+        "Advanced summaries",
+        "Custom quizzes",
+        "Complete learning materials",
+        "PDF export",
+        "Priority support"
+      ],
+      "cta": "Get Pro"
+    },
+    "enterprise": {
+      "name": "Enterprise",
+      "price": "Custom",
+      "features": [
+        "Everything in Pro",
+        "Custom API",
+        "LMS integration",
+        "Dedicated support",
+        "Training included"
+      ],
+      "cta": "Contact Sales"
+    }
+  },
+  "faq": {
+    "badge": "FAQ",
+    "title": "Frequently Asked Questions",
+    "items": [
+      {
+        "question": "How does MentorIA work?",
+        "answer": "MentorIA uses advanced artificial intelligence to analyze your content and generate high-quality educational materials. Simply enter your topic or paste content, choose the type of material you need, and our AI will create it in seconds."
+      },
+      {
+        "question": "Can I try before paying?",
+        "answer": "Absolutely! We offer a free plan that allows you to make up to 5 generations per day. It's perfect for trying all our features before deciding on a paid plan."
+      },
+      {
+        "question": "What languages are supported?",
+        "answer": "Currently, MentorIA supports Spanish, English, and French. We are working to add more languages soon."
+      },
+      {
+        "question": "Is my content secure?",
+        "answer": "Absolutely. All your information is encrypted and we never share your data. We comply with all privacy and data protection regulations."
+      }
+    ]
+  },
+  "contact": {
+    "badge": "Contact",
+    "title": "Have questions? We're here to help",
+    "namePlaceholder": "Name",
+    "emailPlaceholder": "Email",
+    "messagePlaceholder": "Message",
+    "button": "Send Message"
+  },
+  "footer": {
+    "description": "AI-powered educational platform to create quality content in seconds.",
+    "quickLinks": "Quick Links",
+    "legal": "Legal",
+    "social": "Follow Us",
+    "copyright": "MentorIA. All rights reserved.",
+    "terms": "Terms of use",
+    "privacy": "Privacy policy"
+  },
+  "accessibility": {
+    "skip": "Skip to main content"
+  }
+}

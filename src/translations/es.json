@@ -1,0 +1,139 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "generate": "Generar Contenido",
+    "plans": "Planes",
+    "contact": "Contacto",
+    "login": "Iniciar Sesión"
+  },
+  "hero": {
+    "badge": "Potenciado por IA",
+    "title": "Transforma la educación con",
+    "titleHighlight": "Inteligencia Artificial",
+    "subtitle": "Crea contenido educativo personalizado, resúmenes inteligentes y cuestionarios adaptativos que se ajustan al nivel de cada estudiante. El futuro de la educación está aquí.",
+    "ctaPrimary": "Comenzar Gratis",
+    "ctaSecondary": "¿Qué es IA?",
+    "stats": {
+      "educators": "Educadores",
+      "students": "Estudiantes",
+      "satisfaction": "Satisfacción"
+    }
+  },
+  "features": {
+    "badge": "Características",
+    "title": "Todo lo que necesitas para revolucionar tu enseñanza",
+    "summary": {
+      "title": "Resúmenes Inteligentes",
+      "description": "Genera resúmenes concisos y precisos de cualquier contenido educativo al instante.",
+      "cta": "Probar ahora"
+    },
+    "quiz": {
+      "title": "Cuestionarios Adaptativos",
+      "description": "Crea evaluaciones personalizadas que se ajustan al nivel de tus estudiantes.",
+      "cta": "Probar ahora",
+      "badge": "Popular"
+    },
+    "material": {
+      "title": "Material Didáctico",
+      "description": "Produce guías de estudio, ejercicios y recursos educativos de forma automática.",
+      "cta": "Probar ahora"
+    }
+  },
+  "generator": {
+    "badge": "Generador IA",
+    "title": "Elige el tipo de contenido que deseas crear",
+    "types": {
+      "summary": "Resumen",
+      "quiz": "Cuestionario",
+      "material": "Material"
+    },
+    "placeholder": "Ingresa el tema o pega el contenido aquí...",
+    "button": "Generar",
+    "outputPlaceholder": "Tu contenido generado aparecerá aquí"
+  },
+  "pricing": {
+    "badge": "Planes",
+    "title": "Elige el plan perfecto para ti",
+    "free": {
+      "name": "Gratuito",
+      "price": "0",
+      "period": "/mes",
+      "features": [
+        "5 generaciones al día",
+        "Resúmenes básicos",
+        "Cuestionarios simples",
+        "Soporte por email"
+      ],
+      "cta": "Comenzar Gratis"
+    },
+    "pro": {
+      "name": "Pro",
+      "price": "9.99",
+      "period": "/mes",
+      "badge": "Más Popular",
+      "features": [
+        "Generaciones ilimitadas",
+        "Resúmenes avanzados",
+        "Cuestionarios personalizados",
+        "Material didáctico completo",
+        "Exportación a PDF",
+        "Soporte prioritario"
+      ],
+      "cta": "Obtener Pro"
+    },
+    "enterprise": {
+      "name": "Empresarial",
+      "price": "Personalizado",
+      "features": [
+        "Todo de Pro",
+        "API personalizada",
+        "Integración LMS",
+        "Soporte dedicado",
+        "Capacitación incluida"
+      ],
+      "cta": "Contactar Ventas"
+    }
+  },
+  "faq": {
+    "badge": "FAQ",
+    "title": "Preguntas Frecuentes",
+    "items": [
+      {
+        "question": "¿Cómo funciona MentorIA?",
+        "answer": "MentorIA utiliza inteligencia artificial avanzada para analizar tu contenido y generar material educativo de alta calidad. Simplemente ingresa tu tema o pega el contenido, elige el tipo de material que necesitas y nuestra IA lo creará en segundos."
+      },
+      {
+        "question": "¿Puedo probar antes de pagar?",
+        "answer": "¡Por supuesto! Ofrecemos un plan gratuito que te permite realizar hasta 5 generaciones diarias. Es perfecto para probar todas nuestras características antes de decidirte por un plan de pago."
+      },
+      {
+        "question": "¿Qué idiomas soporta?",
+        "answer": "Actualmente, MentorIA soporta español, inglés y francés. Estamos trabajando para agregar más idiomas próximamente."
+      },
+      {
+        "question": "¿Es seguro mi contenido?",
+        "answer": "Absolutamente. Toda tu información está encriptada y nunca compartimos tus datos. Cumplimos con todas las regulaciones de privacidad y protección de datos."
+      }
+    ]
+  },
+  "contact": {
+    "badge": "Contacto",
+    "title": "¿Tienes preguntas? Estamos aquí para ayudarte",
+    "namePlaceholder": "Nombre",
+    "emailPlaceholder": "Correo Electrónico",
+    "messagePlaceholder": "Mensaje",
+    "button": "Enviar Mensaje"
+  },
+  "footer": {
+    "description": "Plataforma educativa impulsada por IA para crear contenido de calidad en segundos.",
+    "quickLinks": "Enlaces Rápidos",
+    "legal": "Legal",
+    "social": "Síguenos",
+    "copyright": "MentorIA. Todos los derechos reservados.",
+    "terms": "Términos de uso",
+    "privacy": "Política de privacidad"
+  },
+  "accessibility": {
+    "skip": "Saltar al contenido principal"
+  }
+}

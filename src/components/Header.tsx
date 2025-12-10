@@ -28,7 +28,7 @@ export default function Header() {
             setUser(session?.user ?? null);
         });
 
-        const onDoc = (e) => {
+        const onDoc = (e: MouseEvent) => {
             if (!ref.current) return;
             if (!ref.current.contains(e.target as Node)) setOpen(false);
         };

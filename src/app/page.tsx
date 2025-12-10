@@ -2,11 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useLanguage } from "../contexts/LanguageContext";
+import LanguageSelector from "../components/LanguageSelector";
 import "../styles/globals.css"; // tus estilos principales
 
 export default function HomePage() {
   const [activeFAQ, setActiveFAQ] = useState<number | null>(null);
+  const [showVideoModal, setShowVideoModal] = useState(false);
   const router = useRouter();
+  const { t } = useLanguage();
 
   const toggleFAQ = (index: number) => {
     setActiveFAQ(activeFAQ === index ? null : index);
@@ -16,7 +20,7 @@ export default function HomePage() {
     <>
       {/* Enlace de accesibilidad */}
       <a href="#main-content" className="skip-to-content">
-        Saltar al contenido principal
+        {t('accessibility.skip')}
       </a>
 
       {/* Navbar */}
@@ -30,35 +34,33 @@ export default function HomePage() {
           <nav className="nav-menu">
             <ul>
               <li>
-                <a href="#inicio">
-                  <i className="fas fa-home"></i> Inicio
-                </a>
+                <button onClick={() => document.getElementById('inicio')?.scrollIntoView({ behavior: 'smooth' })}>
+                  <i className="fas fa-home"></i> {t('nav.home')}
+                </button>
               </li>
               <li>
-                <a href="#generar">
-                  <i className="fas fa-magic"></i> Generar Contenido
-                </a>
+                <button onClick={() => document.getElementById('generar')?.scrollIntoView({ behavior: 'smooth' })}>
+                  <i className="fas fa-magic"></i> {t('nav.generate')}
+                </button>
               </li>
               <li>
-                <a href="#planes">
-                  <i className="fas fa-crown"></i> Planes
-                </a>
-              </li>
-              <li>
-                <a href="#contacto">
-                  <i className="fas fa-envelope"></i> Contacto
-                </a>
+                <button onClick={() => document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' })}>
+                  <i className="fas fa-envelope"></i> {t('nav.contact')}
+                </button>
               </li>
             </ul>
           </nav>
 
-          <button
-            className="btn-login"
-            aria-label="Iniciar sesión"
-            onClick={() => router.push("/login")}
-          >
-            <i className="fas fa-user"></i> Iniciar Sesión
-          </button>
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            <LanguageSelector />
+            <button
+              className="btn-login"
+              aria-label={t('nav.login')}
+              onClick={() => router.push("/login")}
+            >
+              <i className="fas fa-user"></i> {t('nav.login')}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -68,37 +70,35 @@ export default function HomePage() {
           <div className="hero-container">
             <div className="hero-content">
               <div className="hero-badge">
-                <i className="fas fa-sparkles"></i> Potenciado por IA
+                <i className="fas fa-sparkles"></i> {t('hero.badge')}
               </div>
               <h1>
-                Transforma la educación con{" "}
-                <span className="bright-text">Inteligencia Artificial</span>
+                {t('hero.title')}{" "}
+                <span className="bright-text">{t('hero.titleHighlight')}</span>
               </h1>
               <p>
-                Crea contenido educativo personalizado, resúmenes inteligentes y
-                cuestionarios adaptativos que se ajustan al nivel de cada
-                estudiante. El futuro de la educación está aquí.
+                {t('hero.subtitle')}
               </p>
               <div className="hero-buttons">
-                <button className="btn-primary">
-                  <i className="fas fa-rocket"></i> Comenzar Gratis
+                <button className="btn-primary" onClick={() => router.push("/auth/register")}>
+                  <i className="fas fa-rocket"></i> {t('hero.ctaPrimary')}
                 </button>
-                <button className="btn-secondary">
-                  <i className="fas fa-play"></i> Ver Demo
+                <button className="btn-secondary" onClick={() => setShowVideoModal(true)}>
+                  <i className="fas fa-play"></i> {t('hero.ctaSecondary')}
                 </button>
               </div>
               <div className="hero-stats">
                 <div className="stat">
                   <span className="stat-number">10K+</span>
-                  <span className="stat-label">Educadores</span>
+                  <span className="stat-label">{t('hero.stats.educators')}</span>
                 </div>
                 <div className="stat">
                   <span className="stat-number">50K+</span>
-                  <span className="stat-label">Estudiantes</span>
+                  <span className="stat-label">{t('hero.stats.students')}</span>
                 </div>
                 <div className="stat">
                   <span className="stat-number">99%</span>
-                  <span className="stat-label">Satisfacción</span>
+                  <span className="stat-label">{t('hero.stats.satisfaction')}</span>
                 </div>
               </div>
             </div>
@@ -144,22 +144,20 @@ export default function HomePage() {
               <div className="card-icon">
                 <i className="fas fa-file-alt"></i>
               </div>
-              <h3>Resúmenes Inteligentes</h3>
+              <h3>{t('features.summary.title')}</h3>
               <p>
-                Genera resúmenes automáticos adaptados al nivel del estudiante
-                con análisis semántico avanzado.
+                {t('features.summary.description')}
               </p>
             </div>
 
             <div className="feature-card featured">
-              <div className="featured-badge">Popular</div>
+              <div className="featured-badge">{t('features.quiz.badge')}</div>
               <div className="card-icon">
                 <i className="fas fa-question-circle"></i>
               </div>
-              <h3>Cuestionarios Adaptativos</h3>
+              <h3>{t('features.quiz.title')}</h3>
               <p>
-                Crea quizzes personalizados que se ajustan dinámicamente al
-                progreso del estudiante.
+                {t('features.quiz.description')}
               </p>
             </div>
 
@@ -167,10 +165,9 @@ export default function HomePage() {
               <div className="card-icon">
                 <i className="fas fa-chalkboard-teacher"></i>
               </div>
-              <h3>Material Didáctico</h3>
+              <h3>{t('features.material.title')}</h3>
               <p>
-                Fichas educativas, presentaciones y contenido estructurado listo
-                para usar.
+                {t('features.material.description')}
               </p>
             </div>
           </div>
@@ -221,7 +218,7 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="footer">
+      <footer className="footer" id="contacto">
         <div className="footer-container">
           <div>
             <div className="footer-logo">
@@ -229,11 +226,39 @@ export default function HomePage() {
             </div>
             <p>Transformando la educación con inteligencia artificial.</p>
           </div>
+          <div className="footer-contact">
+            <h4>Contacto</h4>
+            <p><i className="fas fa-envelope"></i> contacto@mentoria.com</p>
+            <p><i className="fas fa-phone"></i> +593 91 234 5678</p>
+            <p><i className="fas fa-map-marker-alt"></i> Manta, Ecuador</p>
+          </div>
           <div className="footer-copy">
             © 2025 MentorIA — Todos los derechos reservados.
           </div>
         </div>
       </footer>
+
+      {/* Modal de Video */}
+      {showVideoModal && (
+        <div className="video-modal-overlay" onClick={() => setShowVideoModal(false)}>
+          <div className="video-modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="video-modal-close" onClick={() => setShowVideoModal(false)}>
+              <i className="fas fa-times"></i>
+            </button>
+            <div className="video-container">
+              <iframe
+                width="100%"
+                height="100%"
+                src="https://www.youtube.com/embed/UKncFg0PyEk"
+                title="Video de MentorIA"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
