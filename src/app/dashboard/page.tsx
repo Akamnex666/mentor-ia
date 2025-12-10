@@ -45,8 +45,8 @@ export default function DashboardPage() {
     return text.toLowerCase().includes(query.toLowerCase());
   };
 
-  const shouldShowInitTab = 
-    !searchQuery.trim() || 
+  const shouldShowInitTab =
+    !searchQuery.trim() ||
     filterContent("Generación Rápida", searchQuery) ||
     filterContent("Resumen Inteligente", searchQuery) ||
     filterContent("Cuestionario Adaptativo", searchQuery) ||
@@ -122,9 +122,9 @@ export default function DashboardPage() {
 
           <div className="header-search-container" style={{ maxWidth: '350px' }}>
             <i className="fas fa-search header-search-icon"></i>
-            <input 
-              type="text" 
-              placeholder="Buscar..." 
+            <input
+              type="text"
+              placeholder="Buscar..."
               className="header-search-input"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -133,7 +133,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="user-dropdown-container" ref={dropdownRef}>
-            <button 
+            <button
               className="user-avatar-button"
               onClick={() => setDropdownOpen(!dropdownOpen)}
             >
@@ -142,7 +142,7 @@ export default function DashboardPage() {
               </div>
               <i className={`fas fa-chevron-down dropdown-icon ${dropdownOpen ? 'open' : ''}`}></i>
             </button>
-            
+
             {dropdownOpen && (
               <div className="user-dropdown-menu">
                 <div className="dropdown-header">
@@ -475,7 +475,7 @@ export default function DashboardPage() {
                 <i className="fas fa-search" style={{ fontSize: '3rem', marginBottom: '1rem', color: '#d1d5db' }}></i>
                 <h3 style={{ marginTop: '1rem', color: '#374151' }}>Sin resultados</h3>
                 <p>No encontramos contenido que coincida con "<strong>{searchQuery}</strong>"</p>
-                <button 
+                <button
                   onClick={() => setSearchQuery("")}
                   className="btn-primary"
                   style={{ marginTop: '1.5rem' }}

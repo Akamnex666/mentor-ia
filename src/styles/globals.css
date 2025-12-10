@@ -836,6 +836,7 @@ body {
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1879,7 +1880,7 @@ body {
   .profile-grid-container {
     grid-template-columns: 1fr;
   }
-  
+
   .profile-sidebar-card {
     position: static;
   }
@@ -1889,11 +1890,11 @@ body {
   .profile-container {
     padding: 6rem 1rem 1rem;
   }
-  
+
   .profile-main-card {
     padding: 1.5rem;
   }
-  
+
   .profile-form-actions {
     flex-direction: column;
   }

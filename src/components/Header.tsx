@@ -69,9 +69,9 @@ export default function Header() {
                 {user && (
                     <div className="header-search-container">
                         <i className="fas fa-search header-search-icon"></i>
-                        <input 
-                            type="text" 
-                            placeholder="Buscar..." 
+                        <input
+                            type="text"
+                            placeholder="Buscar..."
                             className="header-search-input"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
@@ -89,7 +89,7 @@ export default function Header() {
                         </>
                     ) : (
                         <div className="user-dropdown-container" ref={ref}>
-                            <button 
+                            <button
                                 className="user-avatar-button"
                                 onClick={() => setOpen(!open)}
                             >
@@ -98,7 +98,7 @@ export default function Header() {
                                 </div>
                                 <i className={`fas fa-chevron-down dropdown-icon ${open ? 'open' : ''}`}></i>
                             </button>
-                            
+
                             {open && (
                                 <div className="user-dropdown-menu">
                                     <div className="dropdown-header">
