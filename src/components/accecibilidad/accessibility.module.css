@@ -208,7 +208,11 @@
 }
 
 :global(html.a11y-dyslexic-font),
-:global(:root.a11y-dyslexic-font) {
+:global(:root.a11y-dyslexic-font),
+:global(body.a11y-dyslexic-font),
+:global(html.a11y-dyslexic-font *),
+:global(:root.a11y-dyslexic-font *),
+:global(body.a11y-dyslexic-font *) {
   font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', 'Trebuchet MS', system-ui, sans-serif !important;
 }
 
@@ -242,8 +246,10 @@
 
 :global(html.a11y-custom-font),
 :global(:root.a11y-custom-font),
-:global(html.a11y-custom-font),
-:global(body.a11y-custom-font) {
+:global(body.a11y-custom-font),
+:global(html.a11y-custom-font *),
+:global(:root.a11y-custom-font *),
+:global(body.a11y-custom-font *) {
   font-family: var(--a11y-font) !important;
 }
 

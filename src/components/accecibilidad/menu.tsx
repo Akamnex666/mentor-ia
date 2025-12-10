@@ -58,26 +58,39 @@ export default function AccessibilityMenu() {
     const root = document.documentElement;
     toggleClass(root, "a11y-contrast", state.contrast);
     toggleClass(root, "a11y-spacing", state.increasedSpacing);
-    toggleClass(root, "a11y-dyslexic-font", state.dyslexicFont);
+    
+    // Handle dyslexic font - it overrides custom font when active
+    if (state.dyslexicFont) {
+      toggleClass(root, "a11y-dyslexic-font", true);
+      toggleClass(document.body, "a11y-dyslexic-font", true);
+      // Remove custom font when dyslexic is active
+      root.classList.remove('a11y-custom-font');
+      document.body.classList.remove('a11y-custom-font');
+      root.style.removeProperty('--a11y-font');
+    } else {
+      toggleClass(root, "a11y-dyslexic-font", false);
+      toggleClass(document.body, "a11y-dyslexic-font", false);
+      
+      // Apply custom font only if dyslexic font is not active
+      if (state.font) {
+        try {
+          root.style.setProperty('--a11y-font', state.font);
+          root.classList.add('a11y-custom-font');
+          document.body.classList.add('a11y-custom-font');
+        } catch (e) {}
+      } else {
+        try {
+          root.style.removeProperty('--a11y-font');
+          root.classList.remove('a11y-custom-font');
+          document.body.classList.remove('a11y-custom-font');
+        } catch (e) {}
+      }
+    }
+    
     toggleClass(root, 'a11y-large-controls', !!state.largeButtons);
     toggleClass(document.body, 'a11y-large-controls', !!state.largeButtons);
     toggleClass(root, 'a11y-keyboard-nav', !!state.keyboardNav);
     toggleClass(document.body, 'a11y-keyboard-nav', !!state.keyboardNav);
-    if (state.font) {
-      try {
-        root.style.setProperty('--a11y-font', state.font);
-        root.classList.add('a11y-custom-font');
-        document.body.classList.add('a11y-custom-font');
-        document.body.style.fontFamily = state.font;
-      } catch (e) {}
-    } else {
-      try {
-        root.style.removeProperty('--a11y-font');
-        root.classList.remove('a11y-custom-font');
-        document.body.classList.remove('a11y-custom-font');
-        document.body.style.fontFamily = '';
-      } catch (e) {}
-    }
     if (state.accentColor) {
       try { root.style.setProperty('--a11y-accent', state.accentColor); document.body.style.setProperty('--a11y-accent', state.accentColor); } catch(e){}
     } else {
