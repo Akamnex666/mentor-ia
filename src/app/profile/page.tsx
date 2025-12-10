@@ -120,61 +120,176 @@ export default function ProfilePage() {
         return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
     };
 
-    if (loading) return <div className="p-6">Cargando perfil...</div>;
+    if (loading) return (
+        <div className="profile-container">
+            <div className="flex items-center justify-center h-screen">
+                <div className="text-center">
+                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-indigo-200 border-t-indigo-600"></div>
+                    <p className="mt-4 text-gray-600 font-medium">Cargando perfil...</p>
+                </div>
+            </div>
+        </div>
+    );
 
     return (
-        <main className="p-8 max-w-6xl mx-auto">
-            <h1 className="text-3xl font-bold mb-6">Mi Perfil</h1>
+        <main className="profile-container">
+            {/* Header Section */}
+            <div className="profile-header-section">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="profile-header-title">Mi Perfil</h1>
+                        <p className="profile-header-subtitle">Gestiona tu información personal y preferencias</p>
+                    </div>
+                </div>
+            </div>
 
-            <div className="profile-grid">
-                <aside className="profile-card">
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-                        <div className="avatar-circle">
-                            <img src={avatarUrl ?? avatarDataUrl(fullName)} alt="Avatar" />
+            <div className="profile-grid-container">
+                {/* Left Sidebar - Profile Card */}
+                <aside className="profile-sidebar-card">
+                    <div className="profile-content">
+                        {/* Avatar Section */}
+                        <div className="profile-avatar-wrapper">
+                            <img
+                                src={avatarUrl ?? avatarDataUrl(fullName)}
+                                alt="Avatar de perfil"
+                                className="profile-avatar-image"
+                            />
+                            <div className="profile-status-indicator"></div>
                         </div>
 
-                        <div style={{ textAlign: 'center' }}>
-                            <h2 className="text-lg font-semibold">{fullName || 'Usuario'}</h2>
-                            <p className="text-sm text-gray-600">{email}</p>
+                        {/* User Info */}
+                        <div className="profile-user-name-section">
+                            <h2>{fullName || 'Usuario'}</h2>
+                            <p className="profile-user-email">{email}</p>
                         </div>
 
-                        <div className="profile-actions">
-                            <button className="btn-secondary" onClick={handleSignOut}>Cerrar sesión</button>
+                        {/* Role Badge */}
+                        <div className="profile-role-badge">
+                            {role === 'student' ? '👨‍🎓 Estudiante' : role === 'teacher' ? '👨‍🏫 Profesor' : '👤 Otro'}
+                        </div>
+
+                        {/* Stats */}
+                        <div className="profile-stats-grid">
+                            <div className="profile-stat-item">
+                                <p className="profile-stat-number">0</p>
+                                <p className="profile-stat-label">Cursos</p>
+                            </div>
+                            <div className="profile-stat-item">
+                                <p className="profile-stat-number">0</p>
+                                <p className="profile-stat-label">Certificados</p>
+                            </div>
                         </div>
                     </div>
+
+                    {/* Sign Out Button */}
+                    <button
+                        onClick={handleSignOut}
+                        className="profile-sign-out-button"
+                    >
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        Cerrar sesión
+                    </button>
                 </aside>
 
-                <section className="profile-form-card">
-                    <form onSubmit={handleSave} className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-medium">Nombre completo</label>
+                {/* Right Content - Profile Form */}
+                <section className="profile-main-card">
+                    <h3 className="profile-form-title">Información Personal</h3>
+
+                    <form onSubmit={handleSave}>
+                        {/* Name Field */}
+                        <div className="profile-form-group">
+                            <label className="profile-form-label">Nombre Completo</label>
                             <input
-                                className="auth-input"
+                                type="text"
+                                className="profile-form-input"
                                 value={fullName}
                                 onChange={(e) => setFullName(e.target.value)}
-                                placeholder="Tu nombre completo"
+                                placeholder="Ej: Juan Pérez García"
                             />
+                            <p className="profile-form-helper">Este es el nombre que verán otros usuarios</p>
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium">Biografía</label>
-                            <textarea className="auth-input" style={{ minHeight: 120 }} value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Cuéntanos sobre ti"></textarea>
+                        {/* Role Field */}
+                        <div className="profile-form-group">
+                            <label className="profile-form-label">Rol en la Plataforma</label>
+                            <div className="profile-role-options">
+                                {[
+                                    { value: 'student', label: '👨‍🎓 Estudiante', desc: 'Acceso a cursos y recursos' },
+                                    { value: 'teacher', label: '👨‍🏫 Profesor', desc: 'Crear y gestionar cursos' },
+                                    { value: 'other', label: '👤 Otro', desc: 'Rol personalizado' }
+                                ].map((option) => (
+                                    <label key={option.value} className="profile-role-option">
+                                        <input
+                                            type="radio"
+                                            name="role"
+                                            value={option.value}
+                                            checked={role === option.value}
+                                            onChange={(e) => setRole(e.target.value)}
+                                        />
+                                        <div className="profile-role-option-label">
+                                            <div className="profile-role-option-title">{option.label}</div>
+                                            <div className="profile-role-option-desc">{option.desc}</div>
+                                        </div>
+                                    </label>
+                                ))}
+                            </div>
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium">Rol</label>
-                            <select value={role} onChange={(e) => setRole(e.target.value)} className="auth-input">
-                                <option value="student">Estudiante</option>
-                                <option value="teacher">Profesor</option>
-                                <option value="other">Otro</option>
-                            </select>
+                        {/* Bio Field */}
+                        <div className="profile-form-group">
+                            <label className="profile-form-label">Biografía</label>
+                            <textarea
+                                className="profile-form-textarea"
+                                value={bio}
+                                onChange={(e) => setBio(e.target.value)}
+                                placeholder="Cuéntanos sobre ti, tus intereses, experiencia educativa..."
+                                maxLength={500}
+                            />
+                            <p className="profile-char-counter">{bio.length}/500 caracteres</p>
                         </div>
 
-                        <div className="flex items-center gap-4">
-                            <button type="submit" className="btn-primary" disabled={saving}>{saving ? 'Guardando...' : 'Guardar cambios'}</button>
-                            <button type="button" onClick={() => { setFullName(''); setBio(''); setRole('student'); }} className="auth-link">Restablecer</button>
+                        {/* Action Buttons */}
+                        <div className="profile-form-actions">
+                            <button
+                                type="submit"
+                                className="profile-submit-button"
+                                disabled={saving}
+                            >
+                                {saving ? (
+                                    <>
+                                        <svg className="animate-spin h-1 w-1" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        Guardando...
+                                    </>
+                                ) : (
+                                    <>
+                                        <svg className="w-1 h-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        Guardar Cambios
+                                    </>
+                                )}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => { setFullName(''); setBio(''); setRole('student'); }}
+                                className="profile-reset-button"
+                            >
+                                Restablecer
+                            </button>
                         </div>
                     </form>
+
+                    {/* Info Box */}
+                    <div className="profile-info-box">
+                        <p>
+                            <span className="profile-info-bold">💡 Consejo:</span> Mantén tu perfil actualizado para que otros usuarios conozcan mejor quién eres y qué puedes aportar a la comunidad.
+                        </p>
+                    </div>
                 </section>
             </div>
         </main>

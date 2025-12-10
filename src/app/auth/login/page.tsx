@@ -6,6 +6,64 @@ import { useRouter } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
 import { useToast } from "../../../providers/ToastProvider";
 
+// Sistema de bloqueo temporal por intentos fallidos
+const MAX_LOGIN_ATTEMPTS = 5;
+const LOCK_TIME_MINUTES = 15;
+const LOCK_STORAGE_KEY = "login_lock_";
+
+const getLoginAttempts = (email: string) => {
+  const key = `${LOCK_STORAGE_KEY}${email}`;
+  const data = localStorage.getItem(key);
+  if (!data) return { attempts: 0, lockedUntil: null };
+  
+  try {
+    return JSON.parse(data);
+  } catch {
+    return { attempts: 0, lockedUntil: null };
+  }
+};
+
+const setLoginAttempts = (email: string, attempts: number, lockedUntil: number | null = null) => {
+  const key = `${LOCK_STORAGE_KEY}${email}`;
+  localStorage.setItem(key, JSON.stringify({ attempts, lockedUntil }));
+};
+
+const isAccountLocked = (email: string): { locked: boolean; remainingTime: number } => {
+  const { attempts, lockedUntil } = getLoginAttempts(email);
+  
+  if (!lockedUntil) {
+    return { locked: false, remainingTime: 0 };
+  }
+  
+  const now = Date.now();
+  if (now < lockedUntil) {
+    const remainingMs = lockedUntil - now;
+    const remainingMinutes = Math.ceil(remainingMs / 60000);
+    return { locked: true, remainingTime: remainingMinutes };
+  }
+  
+  // El bloqueo ha expirado, reiniciar intentos
+  setLoginAttempts(email, 0, null);
+  return { locked: false, remainingTime: 0 };
+};
+
+const recordFailedAttempt = (email: string) => {
+  const { attempts, lockedUntil } = getLoginAttempts(email);
+  const newAttempts = attempts + 1;
+  
+  if (newAttempts >= MAX_LOGIN_ATTEMPTS) {
+    const lockUntilTime = Date.now() + LOCK_TIME_MINUTES * 60 * 1000;
+    setLoginAttempts(email, newAttempts, lockUntilTime);
+  } else {
+    setLoginAttempts(email, newAttempts, lockedUntil);
+  }
+};
+
+const recordSuccessfulLogin = (email: string) => {
+  const key = `${LOCK_STORAGE_KEY}${email}`;
+  localStorage.removeItem(key);
+};
+
 export default function LoginPage() {
   const router = useRouter();
   const toast = useToast();
@@ -18,22 +76,72 @@ export default function LoginPage() {
   const [resetEmail, setResetEmail] = useState("");
   const [resetLoading, setResetLoading] = useState(false);
   const [resetSent, setResetSent] = useState(false);
+  const [accountLocked, setAccountLocked] = useState(false);
+  const [lockTimeRemaining, setLockTimeRemaining] = useState(0);
+
+  // Controlar el tiempo de desbloqueo
+  useEffect(() => {
+    if (!accountLocked) return;
+    
+    const interval = setInterval(() => {
+      const { locked, remainingTime } = isAccountLocked(email);
+      if (!locked) {
+        setAccountLocked(false);
+        setLockTimeRemaining(0);
+        clearInterval(interval);
+      } else {
+        setLockTimeRemaining(remainingTime);
+      }
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, [accountLocked, email]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError(null);
+
+    // Verificar si la cuenta está bloqueada
+    const { locked, remainingTime } = isAccountLocked(email);
+    if (locked) {
+      const errorMsg = `Cuenta bloqueada temporalmente. Intenta de nuevo en ${remainingTime} minuto${remainingTime !== 1 ? 's' : ''}`;
+      setError(errorMsg);
+      setAccountLocked(true);
+      setLockTimeRemaining(remainingTime);
+      toast.push({ type: "error", message: errorMsg });
+      return;
+    }
+
+    setLoading(true);
     try {
       const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
       if (signInError) {
-        setError(signInError.message || "Credenciales incorrectas");
-        toast.push({ type: "error", message: signInError.message });
+        recordFailedAttempt(email);
+        const { attempts } = getLoginAttempts(email);
+        const remainingAttempts = MAX_LOGIN_ATTEMPTS - attempts;
+        
+        let errorMsg = signInError.message || "Credenciales incorrectas";
+        
+        if (attempts >= MAX_LOGIN_ATTEMPTS) {
+          errorMsg = `Cuenta bloqueada por ${LOCK_TIME_MINUTES} minutos debido a múltiples intentos fallidos`;
+          setAccountLocked(true);
+          const { remainingTime } = isAccountLocked(email);
+          setLockTimeRemaining(remainingTime);
+        } else if (remainingAttempts > 0) {
+          errorMsg = `${errorMsg}. Intentos restantes: ${remainingAttempts}`;
+        }
+        
+        setError(errorMsg);
+        toast.push({ type: "error", message: errorMsg });
         return;
       }
+      
+      recordSuccessfulLogin(email);
       toast.push({ type: "success", message: "Inicio de sesión exitoso" });
       router.push("/dashboard");
     } catch (err: any) {
       setError(err.message);
+      recordFailedAttempt(email);
     } finally {
       setLoading(false);
     }
@@ -240,16 +348,44 @@ export default function LoginPage() {
                     </div>
                   )}
 
+                  {accountLocked && (
+                    <div style={{
+                      backgroundColor: '#fef2f2',
+                      border: '1px solid #fecaca',
+                      borderRadius: '0.75rem',
+                      padding: '1rem',
+                      marginBottom: '1rem',
+                      color: '#dc2626',
+                      fontSize: '0.9rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem'
+                    }}>
+                      <i className="fas fa-lock" style={{ fontSize: '1.2rem' }}></i>
+                      <div>
+                        <strong>Cuenta bloqueada</strong>
+                        <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem' }}>
+                          Intenta de nuevo en {lockTimeRemaining} minuto{lockTimeRemaining !== 1 ? 's' : ''}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
                   <button 
                     type="submit" 
                     className="btn-primary"
-                    disabled={loading}
-                    style={{ width: '100%', marginTop: '0.5rem' }}
+                    disabled={loading || accountLocked}
+                    style={{ width: '100%', marginTop: '0.5rem', opacity: accountLocked ? 0.5 : 1 }}
                   >
                     {loading ? (
                       <>
                         <i className="fas fa-spinner fa-spin"></i>
                         Entrando...
+                      </>
+                    ) : accountLocked ? (
+                      <>
+                        <i className="fas fa-lock"></i>
+                        Bloqueado temporalmente
                       </>
                     ) : (
                       <>
