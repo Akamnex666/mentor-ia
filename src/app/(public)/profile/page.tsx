@@ -3,8 +3,8 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { supabase } from "../../lib/supabase";
-import { useToast } from "../../providers/ToastProvider";
+import { supabase } from "../../../lib/supabase";
+import { useToast } from "../../../providers/ToastProvider";
 
 export default function ProfilePage() {
     const router = useRouter();
@@ -26,7 +26,7 @@ export default function ProfilePage() {
                 const user = userData?.user;
                 if (userErr || !user) {
                     // no hay usuario -> redirigir a login
-                    router.push("/auth/login");
+                    router.push("/login");
                     return;
                 }
 

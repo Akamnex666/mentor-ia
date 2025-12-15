@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "../contexts/LanguageContext";
-import LanguageSelector from "../components/LanguageSelector";
-import "../styles/globals.css"; // tus estilos principales
+import LanguageSelector from "../components/ui/LanguageSelector";
+import "../styles/globals.css";
 
 export default function HomePage() {
   const [activeFAQ, setActiveFAQ] = useState<number | null>(null);
@@ -118,7 +118,7 @@ export default function HomePage() {
                 {t('hero.subtitle')}
               </p>
               <div className="hero-buttons">
-                <button className="btn-primary" onClick={() => router.push("/auth/register")}>
+                <button className="btn-primary" onClick={() => router.push("/register")}>
                   <i className="fas fa-rocket"></i> {t('hero.ctaPrimary')}
                 </button>
                 <button className="btn-secondary" onClick={() => setShowVideoModal(true)}>

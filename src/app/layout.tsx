@@ -1,11 +1,11 @@
 // app/layout.tsx
 import type { Metadata } from "next";
-import "../styles/globals.css"; // acá va tu CSS global (lo que era styles.css en el HTML)
+import "../styles/globals.css";
 import ToastProvider from "../providers/ToastProvider";
 import { LanguageProvider } from "../contexts/LanguageContext";
 import { Poppins, Inter } from "next/font/google";
-import AccessibilityMenu from "../components/accecibilidad/menu";
-import SyncA11y from "../components/accecibilidad/SyncA11y";
+import AccessibilityMenu from "../components/accessibility/AccessibilityMenu";
+import SyncA11y from "../components/accessibility/SyncA11y";
 import Script from 'next/script';
 
 const poppins = Poppins({

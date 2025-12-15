@@ -1,10 +1,10 @@
-﻿"use client";
+"use client";
 
 import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { supabase } from "../lib/supabase";
-import { useToast } from "../providers/ToastProvider";
+import { supabase } from "../../lib/supabase";
+import { useToast } from "../../providers/ToastProvider";
 
 export default function Header() {
     const [user, setUser] = useState<any | null>(null);
@@ -88,7 +88,22 @@ export default function Header() {
                             <Link href="/register" className="btn-register">Registrarse</Link>
                         </>
                     ) : (
-                        <div className="user-dropdown-container" ref={ref}>
+                        <>
+                            <nav className="nav-menu">
+                                <ul>
+                                    <li>
+                                        <Link href="/dashboard" className="nav-tab">
+                                            <i className="fas fa-home"></i> Inicio
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link href="/biblioteca" className="nav-tab">
+                                            <i className="fas fa-book"></i> Biblioteca
+                                        </Link>
+                                    </li>
+                                </ul>
+                            </nav>
+                            <div className="user-dropdown-container" ref={ref}>
                             <button
                                 className="user-avatar-button"
                                 onClick={() => setOpen(!open)}
@@ -117,6 +132,7 @@ export default function Header() {
                                 </div>
                             )}
                         </div>
+                        </>
                     )}
                 </div>
             </div>

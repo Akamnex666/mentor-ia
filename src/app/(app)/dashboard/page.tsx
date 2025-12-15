@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { supabase } from "../../lib/supabase";
+import { supabase } from "../../../lib/supabase";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -37,7 +37,22 @@ export default function DashboardPage() {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setDropdownOpen(false);
-    router.push("/auth/login");
+    router.push("/login");
+  };
+
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      
+      // Detectar si busca "biblioteca"
+      if (query.includes('biblioteca') || query.includes('library') || query.includes('libros') || query.includes('books')) {
+        router.push('/biblioteca');
+        return;
+      }
+      
+      // Si no, continuar con búsqueda normal (no hace nada por ahora)
+      // Podrías implementar búsqueda en el dashboard aquí
+    }
   };
 
   // Función para filtrar contenido según búsqueda
@@ -128,6 +143,7 @@ export default function DashboardPage() {
               className="header-search-input"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={handleSearch}
               spellCheck="false"
             />
           </div>
@@ -185,6 +201,111 @@ export default function DashboardPage() {
           {/* Sección de Generación Rápida */}
           {activeTab === "inicio" && shouldShowInitTab && (
             <div className="tab-content">
+              {/* Banner Biblioteca - Destacado Horizontal */}
+              <div 
+                onClick={() => router.push('/biblioteca')} 
+                style={{
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  borderRadius: '16px',
+                  padding: '2rem',
+                  marginBottom: '2rem',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  boxShadow: '0 4px 20px rgba(102, 126, 234, 0.25)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '2rem',
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-4px)';
+                  e.currentTarget.style.boxShadow = '0 8px 30px rgba(102, 126, 234, 0.35)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 20px rgba(102, 126, 234, 0.25)';
+                }}
+              >
+                {/* Decoración de fondo */}
+                <div style={{
+                  position: 'absolute',
+                  right: '-50px',
+                  top: '-50px',
+                  width: '200px',
+                  height: '200px',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  borderRadius: '50%',
+                  pointerEvents: 'none'
+                }}></div>
+                
+                {/* Icono */}
+                <div style={{
+                  width: '80px',
+                  height: '80px',
+                  background: 'rgba(255, 255, 255, 0.2)',
+                  borderRadius: '16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                  backdropFilter: 'blur(10px)'
+                }}>
+                  <i className="fas fa-book-open" style={{ 
+                    fontSize: '2rem', 
+                    color: 'white' 
+                  }}></i>
+                </div>
+
+                {/* Contenido */}
+                <div style={{ flex: 1, color: 'white' }}>
+                  <h3 style={{ 
+                    fontSize: '1.5rem', 
+                    fontWeight: '700', 
+                    marginBottom: '0.5rem',
+                    color: 'white'
+                  }}>
+                    Biblioteca Digital
+                  </h3>
+                  <p style={{ 
+                    fontSize: '1rem', 
+                    opacity: 0.95,
+                    marginBottom: 0,
+                    color: 'white'
+                  }}>
+                    Explora miles de recursos educativos gratuitos de todo el mundo. Busca libros, artículos y guarda tus favoritos.
+                  </p>
+                </div>
+
+                {/* Botón */}
+                <button 
+                  style={{
+                    background: 'white',
+                    color: '#667eea',
+                    padding: '0.75rem 1.5rem',
+                    borderRadius: '10px',
+                    border: 'none',
+                    fontWeight: '600',
+                    fontSize: '1rem',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    transition: 'all 0.2s ease',
+                    flexShrink: 0
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'scale(1.05)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }}
+                >
+                  Explorar ahora
+                  <i className="fas fa-arrow-right"></i>
+                </button>
+              </div>
+
               <div className="section-header">
                 <h2>Generación Rápida</h2>
                 <p>Crea nuevo contenido educativo en segundos</p>

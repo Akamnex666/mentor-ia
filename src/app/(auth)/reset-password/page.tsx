@@ -58,7 +58,7 @@ export default function ResetPasswordPage() {
 
       // Redirigir al login después de 2 segundos
       setTimeout(() => {
-        router.push("/auth/login");
+        router.push("/login");
       }, 2000);
     } catch (err: any) {
       setError(err.message);
@@ -112,7 +112,7 @@ export default function ResetPasswordPage() {
           <button
             className="btn-login"
             aria-label="Iniciar sesión"
-            onClick={() => router.push("/auth/login")}
+            onClick={() => router.push("/login")}
           >
             <i className="fas fa-sign-in-alt"></i> Iniciar Sesión
           </button>
@@ -279,7 +279,7 @@ export default function ResetPasswordPage() {
                 <div style={{ textAlign: 'center', marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid #e5e7eb' }}>
                   <p style={{ color: '#6b7280', fontSize: '0.9rem' }}>
                     ¿Recordaste tu contraseña?{" "}
-                    <a href="/auth/login" className="auth-link">
+                    <a href="/login" className="auth-link">
                       Iniciar sesión
                     </a>
                   </p>

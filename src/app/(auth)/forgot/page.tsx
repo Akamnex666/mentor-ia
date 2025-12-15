@@ -18,7 +18,7 @@ export default function ForgotPage() {
         setMessage(null);
         try {
             // redirectTo debe estar registrado en Authentication -> Settings -> Redirect URLs en Supabase
-            const redirectTo = typeof window !== "undefined" ? window.location.origin + "/auth/login" : undefined;
+            const redirectTo = typeof window !== "undefined" ? window.location.origin + "/login" : undefined;
             // Llamada a Supabase (v2+) para enviar email de recuperación
             // @ts-ignore - algunas versiones del SDK tienen firmas distintas
             const { data, error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
@@ -67,7 +67,7 @@ export default function ForgotPage() {
                     {message && <div className="auth-success">{message}</div>}
 
                     <div className="auth-aux">
-                        <a href="/auth/login" className="auth-link">Volver al login</a>
+                        <a href="/login" className="auth-link">Volver al login</a>
                         <button type="submit" className="auth-button" disabled={loading}>
                             {loading ? "Enviando..." : "Enviar instrucciones"}
                         </button>

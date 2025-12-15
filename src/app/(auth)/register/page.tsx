@@ -52,7 +52,7 @@ export default function RegisterPage() {
       }
       setMessage("Registro exitoso. Revisa tu correo para confirmar.");
       toast.push({ type: "success", message: "Registro exitoso" });
-      setTimeout(() => router.push("/auth/login"), 1500);
+      setTimeout(() => router.push("/login"), 1500);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -105,7 +105,7 @@ export default function RegisterPage() {
           <button
             className="btn-login"
             aria-label="Iniciar sesión"
-            onClick={() => router.push("/auth/login")}
+            onClick={() => router.push("/login")}
           >
             <i className="fas fa-user"></i> Iniciar Sesión
           </button>
@@ -298,7 +298,7 @@ export default function RegisterPage() {
             <div style={{ textAlign: 'center', marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid #e5e7eb' }}>
               <p style={{ color: '#6b7280', fontSize: '0.9rem' }}>
                 ¿Ya tienes cuenta?{" "}
-                <a href="/auth/login" className="auth-link">
+                <a href="/login" className="auth-link">
                   Inicia sesión
                 </a>
               </p>

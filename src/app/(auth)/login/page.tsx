@@ -227,7 +227,7 @@ export default function LoginPage() {
           <button
             className="btn-login"
             aria-label="Registrarse"
-            onClick={() => router.push("/auth/register")}
+            onClick={() => router.push("/register")}
           >
             <i className="fas fa-user-plus"></i> Registrarse
           </button>
@@ -399,7 +399,7 @@ export default function LoginPage() {
                 <div style={{ textAlign: 'center', marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid #e5e7eb' }}>
                   <p style={{ color: '#6b7280', fontSize: '0.9rem' }}>
                     ¿No tienes cuenta?{" "}
-                    <a href="/auth/register" className="auth-link">
+                    <a href="/register" className="auth-link">
                       Regístrate ahora
                     </a>
                   </p>

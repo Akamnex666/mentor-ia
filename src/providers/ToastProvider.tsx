@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useCallback, useState, useEffect } from "react";
-import ToastList from "../components/Toast";
+import ToastList from "../components/ui/Toast";
 
 type Toast = {
     id: string;
