@@ -194,35 +194,10 @@ export default function LoginPage() {
     <>
       <header className="navbar">
         <div className="nav-container">
-          <div className="logo">
+          <div className="logo" onClick={() => router.push('/')} style={{ cursor: 'pointer' }}>
             <i className="fas fa-graduation-cap"></i>
             <span>MentorIA</span>
           </div>
-
-          <nav className="nav-menu">
-            <ul>
-              <li>
-                <a href="/">
-                  <i className="fas fa-home"></i> Inicio
-                </a>
-              </li>
-              <li>
-                <a href="/#generar">
-                  <i className="fas fa-magic"></i> Generar Contenido
-                </a>
-              </li>
-              <li>
-                <a href="/#planes">
-                  <i className="fas fa-crown"></i> Planes
-                </a>
-              </li>
-              <li>
-                <a href="/#contacto">
-                  <i className="fas fa-envelope"></i> Contacto
-                </a>
-              </li>
-            </ul>
-          </nav>
 
           <button
             className="btn-login"
