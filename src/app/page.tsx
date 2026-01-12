@@ -4,11 +4,16 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "../contexts/LanguageContext";
 import LanguageSelector from "../components/ui/LanguageSelector";
+import AIGenerator from "../components/ai/AIGenerator";
 import "../styles/globals.css";
+
+// Tipo de contenido para el modal
+type AIModalType = "summary" | "quiz" | "material" | null;
 
 export default function HomePage() {
   const [activeFAQ, setActiveFAQ] = useState<number | null>(null);
   const [showVideoModal, setShowVideoModal] = useState(false);
+  const [showAIModal, setShowAIModal] = useState<AIModalType>(null);
   const [contactForm, setContactForm] = useState({
     name: '',
     email: '',
@@ -178,7 +183,7 @@ export default function HomePage() {
             </p>
           </div>
           <div className="features-grid">
-            <div className="feature-card">
+            <div className="feature-card" onClick={() => setShowAIModal("summary")} style={{ cursor: "pointer" }}>
               <div className="card-icon">
                 <i className="fas fa-file-alt"></i>
               </div>
@@ -188,7 +193,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="feature-card featured">
+            <div className="feature-card featured" onClick={() => setShowAIModal("quiz")} style={{ cursor: "pointer" }}>
               <div className="featured-badge">{t('features.quiz.badge')}</div>
               <div className="card-icon">
                 <i className="fas fa-question-circle"></i>
@@ -199,7 +204,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="feature-card">
+            <div className="feature-card" onClick={() => setShowAIModal("material")} style={{ cursor: "pointer" }}>
               <div className="card-icon">
                 <i className="fas fa-chalkboard-teacher"></i>
               </div>
@@ -412,6 +417,140 @@ export default function HomePage() {
           </div>
         </div>
       )}
+
+      {/* Modal de Generador IA */}
+      {showAIModal && (
+        <div 
+          className="ai-modal-overlay" 
+          onClick={() => setShowAIModal(null)}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0, 0, 0, 0.7)",
+            backdropFilter: "blur(5px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999,
+            padding: "1rem"
+          }}
+        >
+          <div 
+            className="ai-modal-content" 
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: "white",
+              borderRadius: "20px",
+              width: "100%",
+              maxWidth: "900px",
+              maxHeight: "90vh",
+              overflow: "hidden",
+              boxShadow: "0 25px 50px rgba(0, 0, 0, 0.25)",
+              animation: "modalSlideIn 0.3s ease-out"
+            }}
+          >
+            {/* Header del Modal */}
+            <div style={{
+              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              padding: "1.5rem 2rem",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center"
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                <div style={{
+                  width: "50px",
+                  height: "50px",
+                  background: "rgba(255,255,255,0.2)",
+                  borderRadius: "12px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}>
+                  <i className={`fas ${
+                    showAIModal === "summary" ? "fa-file-alt" : 
+                    showAIModal === "quiz" ? "fa-question-circle" : 
+                    "fa-chalkboard-teacher"
+                  }`} style={{ fontSize: "1.5rem", color: "white" }}></i>
+                </div>
+                <div>
+                  <h2 style={{ color: "white", margin: 0, fontSize: "1.5rem" }}>
+                    {showAIModal === "summary" && "Generar Resumen Inteligente"}
+                    {showAIModal === "quiz" && "Crear Cuestionario Adaptativo"}
+                    {showAIModal === "material" && "Crear Material Didáctico"}
+                  </h2>
+                  <p style={{ color: "rgba(255,255,255,0.8)", margin: 0, fontSize: "0.9rem" }}>
+                    Potenciado por Gemini AI
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowAIModal(null)}
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "50%",
+                  border: "none",
+                  background: "rgba(255,255,255,0.2)",
+                  color: "white",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "1.2rem",
+                  transition: "background 0.2s ease"
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.3)"}
+                onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.2)"}
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+
+            {/* Contenido del Modal */}
+            <div style={{ 
+              padding: "2rem", 
+              maxHeight: "calc(90vh - 120px)", 
+              overflowY: "auto" 
+            }}>
+              <AIGenerator 
+                defaultType={showAIModal}
+                onContentGenerated={(content, type) => {
+                  console.log("Contenido generado:", type);
+                }}
+                onQuizGenerated={(quiz) => {
+                  console.log("Quiz generado:", quiz.title);
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style jsx global>{`
+        @keyframes modalSlideIn {
+          from {
+            opacity: 0;
+            transform: scale(0.9) translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+          }
+        }
+        
+        .feature-card {
+          transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+          transform: translateY(-8px);
+          box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
+        }
+      `}</style>
     </>
   );
 }

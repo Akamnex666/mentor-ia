@@ -135,5 +135,62 @@
   },
   "accessibility": {
     "skip": "Saltar al contenido principal"
+  },
+  "ai": {
+    "generator": {
+      "title": "Generador de Contenido IA",
+      "types": {
+        "summary": "Resumen",
+        "quiz": "Cuestionario",
+        "material": "Material",
+        "explanation": "Explicación",
+        "exercises": "Ejercicios"
+      },
+      "topicLabel": "Tema",
+      "topicPlaceholder": "Ej: La Revolución Industrial, Ecuaciones cuadráticas...",
+      "contextLabel": "Contexto adicional (opcional)",
+      "contextPlaceholder": "Añade detalles específicos, nivel educativo, enfoque...",
+      "numQuestionsLabel": "Número de preguntas",
+      "difficultyLabel": "Dificultad",
+      "difficulties": {
+        "mixed": "Variada",
+        "easy": "Fácil",
+        "medium": "Media",
+        "hard": "Difícil"
+      },
+      "generateButton": "Generar",
+      "generating": "Generando...",
+      "newGeneration": "Nueva generación",
+      "contentGenerated": "Contenido Generado",
+      "copyToClipboard": "Copiar al portapapeles",
+      "errors": {
+        "topicRequired": "Se requiere un tema",
+        "generationFailed": "Error al generar contenido"
+      }
+    },
+    "chat": {
+      "title": "MentorIA",
+      "online": "En línea",
+      "typing": "Escribiendo...",
+      "placeholder": "Escribe tu pregunta...",
+      "clearChat": "Limpiar chat",
+      "welcome": {
+        "greeting": "¡Hola! Soy MentorIA",
+        "description": "Tu asistente educativo inteligente. Puedo ayudarte con:",
+        "suggestions": {
+          "explanations": "Explicaciones de temas",
+          "studyTips": "Consejos de estudio",
+          "techniques": "Técnicas de aprendizaje"
+        }
+      }
+    },
+    "quiz": {
+      "question": "Pregunta",
+      "verify": "Verificar",
+      "correct": "¡Correcto!",
+      "incorrect": "Incorrecto",
+      "true": "Verdadero",
+      "false": "Falso"
+    }
   }
 }

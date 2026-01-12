@@ -135,5 +135,62 @@
   },
   "accessibility": {
     "skip": "Skip to main content"
+  },
+  "ai": {
+    "generator": {
+      "title": "AI Content Generator",
+      "types": {
+        "summary": "Summary",
+        "quiz": "Quiz",
+        "material": "Material",
+        "explanation": "Explanation",
+        "exercises": "Exercises"
+      },
+      "topicLabel": "Topic",
+      "topicPlaceholder": "E.g.: The Industrial Revolution, Quadratic equations...",
+      "contextLabel": "Additional context (optional)",
+      "contextPlaceholder": "Add specific details, educational level, focus...",
+      "numQuestionsLabel": "Number of questions",
+      "difficultyLabel": "Difficulty",
+      "difficulties": {
+        "mixed": "Mixed",
+        "easy": "Easy",
+        "medium": "Medium",
+        "hard": "Hard"
+      },
+      "generateButton": "Generate",
+      "generating": "Generating...",
+      "newGeneration": "New generation",
+      "contentGenerated": "Generated Content",
+      "copyToClipboard": "Copy to clipboard",
+      "errors": {
+        "topicRequired": "A topic is required",
+        "generationFailed": "Failed to generate content"
+      }
+    },
+    "chat": {
+      "title": "MentorIA",
+      "online": "Online",
+      "typing": "Typing...",
+      "placeholder": "Write your question...",
+      "clearChat": "Clear chat",
+      "welcome": {
+        "greeting": "Hi! I'm MentorIA",
+        "description": "Your smart educational assistant. I can help you with:",
+        "suggestions": {
+          "explanations": "Topic explanations",
+          "studyTips": "Study tips",
+          "techniques": "Learning techniques"
+        }
+      }
+    },
+    "quiz": {
+      "question": "Question",
+      "verify": "Verify",
+      "correct": "Correct!",
+      "incorrect": "Incorrect",
+      "true": "True",
+      "false": "False"
+    }
   }
 }

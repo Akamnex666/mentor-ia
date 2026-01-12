@@ -135,5 +135,62 @@
   },
   "accessibility": {
     "skip": "Passer au contenu principal"
+  },
+  "ai": {
+    "generator": {
+      "title": "Générateur de Contenu IA",
+      "types": {
+        "summary": "Résumé",
+        "quiz": "Quiz",
+        "material": "Matériel",
+        "explanation": "Explication",
+        "exercises": "Exercices"
+      },
+      "topicLabel": "Sujet",
+      "topicPlaceholder": "Ex: La Révolution Industrielle, Équations quadratiques...",
+      "contextLabel": "Contexte additionnel (optionnel)",
+      "contextPlaceholder": "Ajoutez des détails spécifiques, niveau éducatif, focus...",
+      "numQuestionsLabel": "Nombre de questions",
+      "difficultyLabel": "Difficulté",
+      "difficulties": {
+        "mixed": "Mixte",
+        "easy": "Facile",
+        "medium": "Moyen",
+        "hard": "Difficile"
+      },
+      "generateButton": "Générer",
+      "generating": "Génération en cours...",
+      "newGeneration": "Nouvelle génération",
+      "contentGenerated": "Contenu Généré",
+      "copyToClipboard": "Copier dans le presse-papiers",
+      "errors": {
+        "topicRequired": "Un sujet est requis",
+        "generationFailed": "Échec de la génération du contenu"
+      }
+    },
+    "chat": {
+      "title": "MentorIA",
+      "online": "En ligne",
+      "typing": "En train d'écrire...",
+      "placeholder": "Écrivez votre question...",
+      "clearChat": "Effacer le chat",
+      "welcome": {
+        "greeting": "Bonjour! Je suis MentorIA",
+        "description": "Votre assistant éducatif intelligent. Je peux vous aider avec:",
+        "suggestions": {
+          "explanations": "Explications de sujets",
+          "studyTips": "Conseils d'étude",
+          "techniques": "Techniques d'apprentissage"
+        }
+      }
+    },
+    "quiz": {
+      "question": "Question",
+      "verify": "Vérifier",
+      "correct": "Correct!",
+      "incorrect": "Incorrect",
+      "true": "Vrai",
+      "false": "Faux"
+    }
   }
 }

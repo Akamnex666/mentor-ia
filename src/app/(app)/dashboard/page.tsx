@@ -1,10 +1,25 @@
 // DashboardPage.tsx
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
+import AIGenerator from "../../../components/ai/AIGenerator";
+import { Quiz } from "../../../types/ai";
+
+// Tipo de contenido para el modal
+type AIModalType = "summary" | "quiz" | "material" | "explanation" | "exercises" | null;
+
+// Tipo para contenido guardado
+type SavedContent = {
+  id: string;
+  type: "summary" | "quiz" | "material" | "explanation" | "exercises";
+  title: string;
+  content: string;
+  quiz?: Quiz;
+  createdAt: string;
+};
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -14,13 +29,23 @@ export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("inicio");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
-  const dropdownRef = React.useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [showAIModal, setShowAIModal] = useState<AIModalType>(null);
+  const [savedContents, setSavedContents] = useState<SavedContent[]>([]);
+  const [contentFilter, setContentFilter] = useState<string>("all");
+  const [viewingContent, setViewingContent] = useState<SavedContent | null>(null);
+  const [generatingPDF, setGeneratingPDF] = useState(false);
+  const [generatingImage, setGeneratingImage] = useState(false);
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
 
   useEffect(() => {
     const getUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
       setLoading(false);
+      if (user) {
+        loadSavedContents(user.id);
+      }
     };
     getUser();
 
@@ -33,6 +58,168 @@ export default function DashboardPage() {
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
+
+  // Cargar contenidos guardados
+  const loadSavedContents = (userId: string) => {
+    try {
+      const saved = localStorage.getItem(`mentoria_contents_${userId}`);
+      if (saved) {
+        setSavedContents(JSON.parse(saved));
+      }
+    } catch (e) {
+      console.error("Error loading saved contents:", e);
+    }
+  };
+
+  // Guardar contenido generado
+  const saveContent = (type: string, title: string, content: string, quiz?: Quiz) => {
+    if (!user) return;
+
+    const newContent: SavedContent = {
+      id: `content_${Date.now()}`,
+      type: type as SavedContent["type"],
+      title,
+      content,
+      quiz,
+      createdAt: new Date().toISOString(),
+    };
+
+    const updated = [newContent, ...savedContents];
+    setSavedContents(updated);
+    localStorage.setItem(`mentoria_contents_${user.id}`, JSON.stringify(updated));
+  };
+
+  // Eliminar contenido
+  const deleteContent = (id: string) => {
+    if (!user) return;
+    const updated = savedContents.filter(c => c.id !== id);
+    setSavedContents(updated);
+    localStorage.setItem(`mentoria_contents_${user.id}`, JSON.stringify(updated));
+  };
+
+  // Filtrar contenidos
+  const filteredContents = savedContents.filter(c => {
+    if (contentFilter === "all") return true;
+    return c.type === contentFilter;
+  });
+
+  // Generar PDF del contenido
+  const generatePDF = async (content: SavedContent) => {
+    setGeneratingPDF(true);
+    try {
+      // Crear contenido HTML para el PDF
+      const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <title>${content.title}</title>
+          <style>
+            body { 
+              font-family: 'Segoe UI', Arial, sans-serif; 
+              padding: 40px; 
+              max-width: 800px; 
+              margin: 0 auto;
+              line-height: 1.8;
+              color: #333;
+            }
+            h1 { 
+              color: #667eea; 
+              border-bottom: 3px solid #667eea; 
+              padding-bottom: 15px;
+              margin-bottom: 30px;
+            }
+            h2 { color: #764ba2; margin-top: 30px; }
+            h3 { color: #667eea; }
+            .meta { 
+              color: #666; 
+              font-size: 14px; 
+              margin-bottom: 30px;
+              padding: 15px;
+              background: #f8f9fa;
+              border-radius: 8px;
+            }
+            .content { 
+              white-space: pre-wrap; 
+              font-size: 16px;
+            }
+            ul, ol { margin: 15px 0; padding-left: 25px; }
+            li { margin: 8px 0; }
+            .footer {
+              margin-top: 50px;
+              padding-top: 20px;
+              border-top: 1px solid #eee;
+              color: #888;
+              font-size: 12px;
+              text-align: center;
+            }
+          </style>
+        </head>
+        <body>
+          <h1>${content.title}</h1>
+          <div class="meta">
+            <strong>Tipo:</strong> ${content.type === 'summary' ? 'Resumen' : content.type === 'quiz' ? 'Cuestionario' : content.type === 'material' ? 'Material Didáctico' : content.type === 'exercises' ? 'Ejercicios' : 'Explicación'}<br>
+            <strong>Fecha de creación:</strong> ${new Date(content.createdAt).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}<br>
+            <strong>Generado por:</strong> MentorIA con Gemini AI
+          </div>
+          <div class="content">${content.content.replace(/\n/g, '<br>')}</div>
+          <div class="footer">
+            Generado con MentorIA - Plataforma Educativa con IA<br>
+            © ${new Date().getFullYear()} MentorIA
+          </div>
+        </body>
+        </html>
+      `;
+
+      // Crear blob y descargar
+      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      
+      // Abrir en nueva ventana para imprimir como PDF
+      const printWindow = window.open(url, '_blank');
+      if (printWindow) {
+        printWindow.onload = () => {
+          printWindow.print();
+        };
+      }
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Error al generar el PDF');
+    } finally {
+      setGeneratingPDF(false);
+    }
+  };
+
+  // Generar imagen con IA basada en el contenido
+  const generateImage = async (content: SavedContent) => {
+    setGeneratingImage(true);
+    setGeneratedImage(null);
+    try {
+      // Usar la API para generar una descripción visual del contenido
+      const response = await fetch('/api/ai/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'material',
+          topic: `Crea una infografía educativa visual en formato texto/ASCII art sobre: ${content.title}. 
+                  Incluye iconos representativos usando emojis, diagramas simples con caracteres, 
+                  y organiza la información de forma muy visual y atractiva. 
+                  Usa cajas, flechas y símbolos para representar conceptos.`,
+          additionalContext: content.content.substring(0, 500)
+        })
+      });
+
+      if (!response.ok) throw new Error('Error en la API');
+      
+      const data = await response.json();
+      setGeneratedImage(data.content);
+    } catch (error) {
+      console.error('Error generating image:', error);
+      alert('Error al generar la imagen. Intenta de nuevo.');
+    } finally {
+      setGeneratingImage(false);
+    }
+  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -312,18 +499,18 @@ export default function DashboardPage() {
               </div>
 
               <div className="features-grid">
-                <div className="feature-card">
+                <div className="feature-card" onClick={() => setShowAIModal("summary")} style={{ cursor: "pointer" }}>
                   <div className="card-icon">
                     <i className="fas fa-file-contract"></i>
                   </div>
                   <h3>Resumen Inteligente</h3>
                   <p>Genera resúmenes automáticos de cualquier tema educativo</p>
                   <button className="btn-primary" style={{ marginTop: '1rem' }}>
-                    <i className="fas fa-plus"></i> Crear Resumen
+                    <i className="fas fa-magic"></i> Crear Resumen
                   </button>
                 </div>
 
-                <div className="feature-card featured">
+                <div className="feature-card featured" onClick={() => setShowAIModal("quiz")} style={{ cursor: "pointer" }}>
                   <div className="featured-badge">Popular</div>
                   <div className="card-icon">
                     <i className="fas fa-question-circle"></i>
@@ -331,18 +518,18 @@ export default function DashboardPage() {
                   <h3>Cuestionario Adaptativo</h3>
                   <p>Crea quizzes que se ajustan al nivel de cada estudiante</p>
                   <button className="btn-primary" style={{ marginTop: '1rem' }}>
-                    <i className="fas fa-plus"></i> Crear Quiz
+                    <i className="fas fa-magic"></i> Crear Quiz
                   </button>
                 </div>
 
-                <div className="feature-card">
+                <div className="feature-card" onClick={() => setShowAIModal("material")} style={{ cursor: "pointer" }}>
                   <div className="card-icon">
                     <i className="fas fa-chalkboard"></i>
                   </div>
                   <h3>Material Didáctico</h3>
                   <p>Fichas educativas y presentaciones personalizadas</p>
                   <button className="btn-primary" style={{ marginTop: '1rem' }}>
-                    <i className="fas fa-plus"></i> Crear Material
+                    <i className="fas fa-magic"></i> Crear Material
                   </button>
                 </div>
               </div>
@@ -350,43 +537,70 @@ export default function DashboardPage() {
               {/* Contenidos Recientes */}
               <div className="recent-content">
                 <h3 style={{ marginBottom: '1.5rem', color: '#1f2937' }}>Contenidos Recientes</h3>
-                <div className="content-grid">
-                  <div className="content-item">
-                    <div className="content-icon">
-                      <i className="fas fa-file-pdf"></i>
-                    </div>
-                    <div className="content-info">
-                      <h4>Resumen: Historia del Arte</h4>
-                      <p>Generado hace 2 horas • 15 estudiantes</p>
-                    </div>
-                    <div className="content-actions">
-                      <button className="btn-secondary small">
-                        <i className="fas fa-eye"></i>
-                      </button>
-                      <button className="btn-secondary small">
-                        <i className="fas fa-download"></i>
-                      </button>
-                    </div>
+                {savedContents.length === 0 ? (
+                  <div style={{
+                    textAlign: 'center',
+                    padding: '2rem',
+                    background: '#f8fafc',
+                    borderRadius: '12px',
+                    color: '#6b7280'
+                  }}>
+                    <i className="fas fa-folder-open" style={{ fontSize: '2.5rem', marginBottom: '1rem', color: '#cbd5e1' }}></i>
+                    <p style={{ margin: 0 }}>Aún no has generado contenido. ¡Crea tu primer resumen o quiz!</p>
                   </div>
-
-                  <div className="content-item">
-                    <div className="content-icon">
-                      <i className="fas fa-question-circle"></i>
-                    </div>
-                    <div className="content-info">
-                      <h4>Quiz: Matemáticas Básicas</h4>
-                      <p>Generado ayer • 28 estudiantes</p>
-                    </div>
-                    <div className="content-actions">
-                      <button className="btn-secondary small">
-                        <i className="fas fa-eye"></i>
-                      </button>
-                      <button className="btn-secondary small">
-                        <i className="fas fa-download"></i>
-                      </button>
-                    </div>
+                ) : (
+                  <div className="content-grid">
+                    {savedContents.slice(0, 4).map((content) => (
+                      <div 
+                        key={content.id} 
+                        className="content-item"
+                        onClick={() => setViewingContent(content)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <div className="content-icon">
+                          <i className={`fas ${
+                            content.type === 'quiz' ? 'fa-question-circle' :
+                            content.type === 'summary' ? 'fa-file-alt' :
+                            content.type === 'material' ? 'fa-chalkboard' :
+                            content.type === 'exercises' ? 'fa-tasks' :
+                            'fa-lightbulb'
+                          }`}></i>
+                        </div>
+                        <div className="content-info">
+                          <h4>{content.title}</h4>
+                          <p>Generado {new Date(content.createdAt).toLocaleDateString('es-ES', { 
+                            day: 'numeric', 
+                            month: 'short',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}</p>
+                        </div>
+                        <div className="content-actions">
+                          <button 
+                            className="btn-secondary small"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setViewingContent(content);
+                            }}
+                            title="Ver contenido"
+                          >
+                            <i className="fas fa-eye"></i>
+                          </button>
+                          <button 
+                            className="btn-secondary small"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              generatePDF(content);
+                            }}
+                            title="Descargar PDF"
+                          >
+                            <i className="fas fa-file-pdf"></i>
+                          </button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                </div>
+                )}
               </div>
             </div>
           )}
@@ -400,7 +614,7 @@ export default function DashboardPage() {
               </div>
 
               <div className="generation-options">
-                <div className="generation-card">
+                <div className="generation-card" onClick={() => setShowAIModal("summary")} style={{ cursor: "pointer" }}>
                   <div className="generation-header">
                     <i className="fas fa-file-contract"></i>
                     <h3>Resumen Inteligente</h3>
@@ -416,7 +630,7 @@ export default function DashboardPage() {
                   </button>
                 </div>
 
-                <div className="generation-card featured">
+                <div className="generation-card featured" onClick={() => setShowAIModal("quiz")} style={{ cursor: "pointer" }}>
                   <div className="featured-badge">Más Usado</div>
                   <div className="generation-header">
                     <i className="fas fa-question-circle"></i>
@@ -433,7 +647,7 @@ export default function DashboardPage() {
                   </button>
                 </div>
 
-                <div className="generation-card">
+                <div className="generation-card" onClick={() => setShowAIModal("material")} style={{ cursor: "pointer" }}>
                   <div className="generation-header">
                     <i className="fas fa-chalkboard-teacher"></i>
                     <h3>Material Didáctico</h3>
@@ -457,63 +671,150 @@ export default function DashboardPage() {
             <div className="tab-content">
               <div className="section-header">
                 <h2>Mis Contenidos Educativos</h2>
-                <p>Gestiona y organiza todo tu material creado</p>
+                <p>Gestiona y organiza todo tu material creado con IA</p>
               </div>
 
               <div className="content-filters">
-                <button className="filter-btn active">Todos</button>
-                <button className="filter-btn">Resúmenes</button>
-                <button className="filter-btn">Cuestionarios</button>
-                <button className="filter-btn">Materiales</button>
+                <button 
+                  className={`filter-btn ${contentFilter === "all" ? "active" : ""}`}
+                  onClick={() => setContentFilter("all")}
+                >
+                  Todos ({savedContents.length})
+                </button>
+                <button 
+                  className={`filter-btn ${contentFilter === "summary" ? "active" : ""}`}
+                  onClick={() => setContentFilter("summary")}
+                >
+                  Resúmenes ({savedContents.filter(c => c.type === "summary").length})
+                </button>
+                <button 
+                  className={`filter-btn ${contentFilter === "quiz" ? "active" : ""}`}
+                  onClick={() => setContentFilter("quiz")}
+                >
+                  Cuestionarios ({savedContents.filter(c => c.type === "quiz").length})
+                </button>
+                <button 
+                  className={`filter-btn ${contentFilter === "material" ? "active" : ""}`}
+                  onClick={() => setContentFilter("material")}
+                >
+                  Materiales ({savedContents.filter(c => c.type === "material").length})
+                </button>
               </div>
 
-              <div className="content-list">
-                <div className="content-item detailed">
-                  <div className="content-icon large">
-                    <i className="fas fa-file-pdf"></i>
-                  </div>
-                  <div className="content-info">
-                    <h4>Resumen: Revolución Industrial</h4>
-                    <p>Historia • Nivel: Secundaria</p>
-                    <div className="content-meta">
-                      <span><i className="fas fa-calendar"></i> Creado: 15 Nov 2024</span>
-                      <span><i className="fas fa-users"></i> 32 estudiantes</span>
-                      <span><i className="fas fa-star"></i> 4.8/5</span>
-                    </div>
-                  </div>
-                  <div className="content-actions">
-                    <button className="btn-primary small">
-                      <i className="fas fa-edit"></i> Editar
-                    </button>
-                    <button className="btn-secondary small">
-                      <i className="fas fa-share"></i> Compartir
-                    </button>
-                  </div>
+              {filteredContents.length === 0 ? (
+                <div style={{
+                  textAlign: 'center',
+                  padding: '3rem',
+                  background: '#f8fafc',
+                  borderRadius: '16px',
+                  color: '#6b7280'
+                }}>
+                  <i className="fas fa-box-open" style={{ fontSize: '3rem', marginBottom: '1rem', color: '#cbd5e1' }}></i>
+                  <h3 style={{ color: '#374151', marginBottom: '0.5rem' }}>No hay contenidos</h3>
+                  <p style={{ marginBottom: '1.5rem' }}>
+                    {contentFilter === "all" 
+                      ? "Aún no has generado ningún contenido. ¡Empieza creando tu primer resumen o quiz!"
+                      : `No tienes ${contentFilter === "summary" ? "resúmenes" : contentFilter === "quiz" ? "cuestionarios" : "materiales"} guardados.`
+                    }
+                  </p>
+                  <button className="btn-primary" onClick={() => setShowAIModal("summary")}>
+                    <i className="fas fa-magic"></i> Generar Contenido
+                  </button>
                 </div>
-
-                <div className="content-item detailed">
-                  <div className="content-icon large">
-                    <i className="fas fa-question-circle"></i>
-                  </div>
-                  <div className="content-info">
-                    <h4>Quiz: Álgebra Básica</h4>
-                    <p>Matemáticas • Nivel: Primaria</p>
-                    <div className="content-meta">
-                      <span><i className="fas fa-calendar"></i> Creado: 12 Nov 2024</span>
-                      <span><i className="fas fa-users"></i> 45 estudiantes</span>
-                      <span><i className="fas fa-star"></i> 4.9/5</span>
+              ) : (
+                <div className="content-list">
+                  {filteredContents.map((content) => (
+                    <div 
+                      key={content.id} 
+                      className="content-item detailed"
+                      onClick={() => setViewingContent(content)}
+                      style={{ cursor: 'pointer', transition: 'all 0.2s ease' }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateX(5px)';
+                        e.currentTarget.style.boxShadow = '0 4px 20px rgba(102, 126, 234, 0.15)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateX(0)';
+                        e.currentTarget.style.boxShadow = 'none';
+                      }}
+                    >
+                      <div className="content-icon large">
+                        <i className={`fas ${
+                          content.type === 'quiz' ? 'fa-question-circle' :
+                          content.type === 'summary' ? 'fa-file-alt' :
+                          content.type === 'material' ? 'fa-chalkboard' :
+                          content.type === 'exercises' ? 'fa-tasks' :
+                          'fa-lightbulb'
+                        }`}></i>
+                      </div>
+                      <div className="content-info">
+                        <h4>{content.title}</h4>
+                        <p style={{ textTransform: 'capitalize' }}>{content.type} • Generado con IA</p>
+                        <div className="content-meta">
+                          <span>
+                            <i className="fas fa-calendar"></i> 
+                            {new Date(content.createdAt).toLocaleDateString('es-ES', { 
+                              day: 'numeric', 
+                              month: 'long',
+                              year: 'numeric'
+                            })}
+                          </span>
+                          <span>
+                            <i className="fas fa-clock"></i>
+                            {new Date(content.createdAt).toLocaleTimeString('es-ES', { 
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="content-actions" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                        <button 
+                          className="btn-primary small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setViewingContent(content);
+                          }}
+                          title="Ver contenido"
+                        >
+                          <i className="fas fa-eye"></i> Ver
+                        </button>
+                        <button 
+                          className="btn-secondary small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            generatePDF(content);
+                          }}
+                          title="Descargar PDF"
+                        >
+                          <i className="fas fa-file-pdf"></i>
+                        </button>
+                        <button 
+                          className="btn-secondary small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigator.clipboard.writeText(content.content);
+                          }}
+                          title="Copiar"
+                        >
+                          <i className="fas fa-copy"></i>
+                        </button>
+                        <button 
+                          className="btn-secondary small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteContent(content.id);
+                          }}
+                          style={{ color: '#ef4444' }}
+                          title="Eliminar"
+                        >
+                          <i className="fas fa-trash"></i>
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                  <div className="content-actions">
-                    <button className="btn-primary small">
-                      <i className="fas fa-edit"></i> Editar
-                    </button>
-                    <button className="btn-secondary small">
-                      <i className="fas fa-share"></i> Compartir
-                    </button>
-                  </div>
+                  ))}
                 </div>
-              </div>
+              )}
             </div>
           )}
 
@@ -608,6 +909,394 @@ export default function DashboardPage() {
           )}
         </div>
       </main>
+
+      {/* Modal para ver contenido */}
+      {viewingContent && (
+        <div 
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0, 0, 0, 0.6)",
+            backdropFilter: "blur(4px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+            padding: "1rem"
+          }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setViewingContent(null);
+              setGeneratedImage(null);
+            }
+          }}
+        >
+          <div 
+            style={{
+              background: "white",
+              borderRadius: "20px",
+              width: "100%",
+              maxWidth: "900px",
+              maxHeight: "90vh",
+              overflow: "hidden",
+              boxShadow: "0 25px 50px rgba(0, 0, 0, 0.25)",
+              animation: "modalSlideIn 0.3s ease-out"
+            }}
+          >
+            {/* Header del Modal */}
+            <div style={{
+              background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+              padding: "1.5rem 2rem",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center"
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                <div style={{
+                  width: "50px",
+                  height: "50px",
+                  background: "rgba(255,255,255,0.2)",
+                  borderRadius: "12px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}>
+                  <i className={`fas ${
+                    viewingContent.type === 'quiz' ? 'fa-question-circle' :
+                    viewingContent.type === 'summary' ? 'fa-file-alt' :
+                    viewingContent.type === 'material' ? 'fa-chalkboard' :
+                    viewingContent.type === 'exercises' ? 'fa-tasks' :
+                    'fa-lightbulb'
+                  }`} style={{ fontSize: "1.5rem", color: "white" }}></i>
+                </div>
+                <div>
+                  <h2 style={{ color: "white", margin: 0, fontSize: "1.3rem" }}>
+                    {viewingContent.title}
+                  </h2>
+                  <p style={{ color: "rgba(255,255,255,0.8)", margin: 0, fontSize: "0.85rem" }}>
+                    {viewingContent.type === 'summary' ? 'Resumen' : 
+                     viewingContent.type === 'quiz' ? 'Cuestionario' : 
+                     viewingContent.type === 'material' ? 'Material Didáctico' :
+                     viewingContent.type === 'exercises' ? 'Ejercicios' : 'Explicación'} • 
+                    {new Date(viewingContent.createdAt).toLocaleDateString('es-ES')}
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => {
+                  setViewingContent(null);
+                  setGeneratedImage(null);
+                }}
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "50%",
+                  border: "none",
+                  background: "rgba(255,255,255,0.2)",
+                  color: "white",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "1.2rem"
+                }}
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+
+            {/* Barra de acciones */}
+            <div style={{
+              padding: "1rem 2rem",
+              background: "#f8fafc",
+              borderBottom: "1px solid #e2e8f0",
+              display: "flex",
+              gap: "0.75rem",
+              flexWrap: "wrap"
+            }}>
+              <button
+                onClick={() => generatePDF(viewingContent)}
+                disabled={generatingPDF}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  padding: "0.6rem 1.2rem",
+                  background: generatingPDF ? "#cbd5e1" : "#ef4444",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: generatingPDF ? "not-allowed" : "pointer",
+                  fontWeight: 600,
+                  fontSize: "0.9rem"
+                }}
+              >
+                <i className={`fas ${generatingPDF ? 'fa-spinner fa-spin' : 'fa-file-pdf'}`}></i>
+                {generatingPDF ? 'Generando...' : 'Descargar PDF'}
+              </button>
+              
+              <button
+                onClick={() => generateImage(viewingContent)}
+                disabled={generatingImage}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  padding: "0.6rem 1.2rem",
+                  background: generatingImage ? "#cbd5e1" : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: generatingImage ? "not-allowed" : "pointer",
+                  fontWeight: 600,
+                  fontSize: "0.9rem"
+                }}
+              >
+                <i className={`fas ${generatingImage ? 'fa-spinner fa-spin' : 'fa-image'}`}></i>
+                {generatingImage ? 'Generando...' : 'Generar Infografía'}
+              </button>
+
+              <button
+                onClick={() => navigator.clipboard.writeText(viewingContent.content)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  padding: "0.6rem 1.2rem",
+                  background: "#6b7280",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  fontWeight: 600,
+                  fontSize: "0.9rem"
+                }}
+              >
+                <i className="fas fa-copy"></i>
+                Copiar texto
+              </button>
+            </div>
+
+            {/* Contenido */}
+            <div style={{ 
+              padding: "2rem", 
+              maxHeight: "calc(90vh - 200px)", 
+              overflowY: "auto" 
+            }}>
+              {/* Infografía generada */}
+              {generatedImage && (
+                <div style={{
+                  marginBottom: "2rem",
+                  padding: "1.5rem",
+                  background: "linear-gradient(135deg, #f0f4ff 0%, #e8f5e9 100%)",
+                  borderRadius: "12px",
+                  border: "2px solid #667eea"
+                }}>
+                  <div style={{ 
+                    display: "flex", 
+                    alignItems: "center", 
+                    gap: "0.5rem", 
+                    marginBottom: "1rem",
+                    color: "#667eea",
+                    fontWeight: 700
+                  }}>
+                    <i className="fas fa-magic"></i>
+                    Infografía Generada con IA
+                  </div>
+                  <pre style={{
+                    whiteSpace: "pre-wrap",
+                    fontFamily: "monospace",
+                    fontSize: "0.9rem",
+                    lineHeight: 1.6,
+                    color: "#1f2937",
+                    background: "white",
+                    padding: "1.5rem",
+                    borderRadius: "8px",
+                    overflow: "auto"
+                  }}>
+                    {generatedImage}
+                  </pre>
+                </div>
+              )}
+
+              {/* Contenido principal */}
+              <div style={{
+                lineHeight: 1.8,
+                color: "#374151",
+                fontSize: "1rem"
+              }}>
+                <div dangerouslySetInnerHTML={{ 
+                  __html: viewingContent.content
+                    .replace(/^### (.*$)/gim, '<h3 style="margin: 1.5rem 0 0.75rem; color: #1f2937; font-size: 1.1rem; font-weight: 700;">$1</h3>')
+                    .replace(/^## (.*$)/gim, '<h2 style="margin: 1.5rem 0 0.75rem; color: #1f2937; font-size: 1.25rem; font-weight: 700;">$1</h2>')
+                    .replace(/^# (.*$)/gim, '<h1 style="margin: 1.5rem 0 0.75rem; color: #1f2937; font-size: 1.4rem; font-weight: 700;">$1</h1>')
+                    .replace(/\*\*(.*?)\*\*/gim, '<strong style="color: #1f2937;">$1</strong>')
+                    .replace(/\*(.*?)\*/gim, '<em>$1</em>')
+                    .replace(/^\- (.*$)/gim, '<li style="margin: 0.25rem 0; margin-left: 1.5rem;">$1</li>')
+                    .replace(/^\* (.*$)/gim, '<li style="margin: 0.25rem 0; margin-left: 1.5rem;">$1</li>')
+                    .replace(/^\d+\. (.*$)/gim, '<li style="margin: 0.25rem 0; margin-left: 1.5rem;">$1</li>')
+                    .replace(/\n/gim, '<br>')
+                }} />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de IA */}
+      {showAIModal && (
+        <div 
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0, 0, 0, 0.6)",
+            backdropFilter: "blur(4px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+            padding: "1rem"
+          }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowAIModal(null);
+          }}
+        >
+          <div 
+            style={{
+              background: "white",
+              borderRadius: "20px",
+              width: "100%",
+              maxWidth: "800px",
+              maxHeight: "90vh",
+              overflow: "hidden",
+              boxShadow: "0 25px 50px rgba(0, 0, 0, 0.25)",
+              animation: "modalSlideIn 0.3s ease-out"
+            }}
+          >
+            {/* Header del Modal */}
+            <div style={{
+              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              padding: "1.5rem 2rem",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center"
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                <div style={{
+                  width: "50px",
+                  height: "50px",
+                  background: "rgba(255,255,255,0.2)",
+                  borderRadius: "12px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}>
+                  <i className={`fas ${
+                    showAIModal === "summary" ? "fa-file-alt" : 
+                    showAIModal === "quiz" ? "fa-question-circle" : 
+                    showAIModal === "exercises" ? "fa-tasks" :
+                    showAIModal === "explanation" ? "fa-lightbulb" :
+                    "fa-chalkboard-teacher"
+                  }`} style={{ fontSize: "1.5rem", color: "white" }}></i>
+                </div>
+                <div>
+                  <h2 style={{ color: "white", margin: 0, fontSize: "1.5rem" }}>
+                    {showAIModal === "summary" && "Generar Resumen Inteligente"}
+                    {showAIModal === "quiz" && "Crear Cuestionario Adaptativo"}
+                    {showAIModal === "material" && "Crear Material Didáctico"}
+                    {showAIModal === "explanation" && "Generar Explicación"}
+                    {showAIModal === "exercises" && "Crear Ejercicios"}
+                  </h2>
+                  <p style={{ color: "rgba(255,255,255,0.8)", margin: 0, fontSize: "0.9rem" }}>
+                    Potenciado por Gemini AI • Se guardará automáticamente
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowAIModal(null)}
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "50%",
+                  border: "none",
+                  background: "rgba(255,255,255,0.2)",
+                  color: "white",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "1.2rem",
+                  transition: "background 0.2s ease"
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.3)"}
+                onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.2)"}
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+
+            {/* Contenido del Modal */}
+            <div style={{ 
+              padding: "2rem", 
+              maxHeight: "calc(90vh - 120px)", 
+              overflowY: "auto" 
+            }}>
+              <AIGenerator 
+                defaultType={showAIModal}
+                onContentGenerated={(content, type) => {
+                  // Extraer título del contenido (primera línea o primeras palabras)
+                  const lines = content.split('\n');
+                  let title = lines[0].replace(/^#+\s*/, '').replace(/\*\*/g, '').trim();
+                  if (title.length > 50) title = title.substring(0, 50) + '...';
+                  if (!title) title = `${type === 'summary' ? 'Resumen' : type === 'material' ? 'Material' : type === 'explanation' ? 'Explicación' : 'Ejercicios'} - ${new Date().toLocaleDateString()}`;
+                  
+                  saveContent(type, title, content);
+                }}
+                onQuizGenerated={(quiz) => {
+                  saveContent('quiz', quiz.title, JSON.stringify(quiz, null, 2), quiz);
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style jsx global>{`
+        @keyframes modalSlideIn {
+          from {
+            opacity: 0;
+            transform: scale(0.9) translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+          }
+        }
+        
+        .feature-card {
+          transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+          transform: translateY(-8px);
+          box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
+        }
+        
+        .generation-card {
+          transition: all 0.3s ease;
+        }
+        
+        .generation-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 15px 30px rgba(102, 126, 234, 0.15);
+        }
+      `}</style>
     </>
   );
 }
