@@ -80,16 +80,16 @@ export default function AIChat({
               <i className="fas fa-graduation-cap"></i>
             </div>
             <h4>¡Hola! Soy MentorIA</h4>
-            <p>Tu asistente educativo inteligente. Puedo ayudarte con:</p>
+            <p>Tu asistente educativo inteligente. Puedes crear:</p>
             <div className="suggestions">
-              <button onClick={() => setInput("Explícame qué es la fotosíntesis")}>
-                <i className="fas fa-leaf"></i> Explicaciones de temas
+              <button onClick={() => setInput("Necesito un resumen sobre")}>
+                <i className="fas fa-file-alt"></i> Resumen
               </button>
-              <button onClick={() => setInput("Dame consejos para estudiar matemáticas")}>
-                <i className="fas fa-calculator"></i> Consejos de estudio
+              <button onClick={() => setInput("Créame un cuestionario sobre")}>
+                <i className="fas fa-list-check"></i> Cuestionario
               </button>
-              <button onClick={() => setInput("¿Cómo puedo mejorar mi comprensión lectora?")}>
-                <i className="fas fa-book-reader"></i> Técnicas de aprendizaje
+              <button onClick={() => setInput("Dame ejercicios prácticos sobre")}>
+                <i className="fas fa-pen-to-square"></i> Ejercicios
               </button>
             </div>
           </div>

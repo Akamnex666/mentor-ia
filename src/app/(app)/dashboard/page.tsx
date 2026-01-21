@@ -9,12 +9,12 @@ import AIGenerator from "../../../components/ai/AIGenerator";
 import { Quiz } from "../../../types/ai";
 
 // Tipo de contenido para el modal
-type AIModalType = "summary" | "quiz" | "material" | "explanation" | "exercises" | null;
+type AIModalType = "summary" | "quiz" | "exercises" | null;
 
 // Tipo para contenido guardado
 type SavedContent = {
   id: string;
-  type: "summary" | "quiz" | "material" | "explanation" | "exercises";
+  type: "summary" | "quiz" | "exercises";
   title: string;
   content: string;
   quiz?: Quiz;
@@ -158,7 +158,7 @@ export default function DashboardPage() {
         <body>
           <h1>${content.title}</h1>
           <div class="meta">
-            <strong>Tipo:</strong> ${content.type === 'summary' ? 'Resumen' : content.type === 'quiz' ? 'Cuestionario' : content.type === 'material' ? 'Material Didáctico' : content.type === 'exercises' ? 'Ejercicios' : 'Explicación'}<br>
+            <strong>Tipo:</strong> ${content.type === 'summary' ? 'Resumen' : content.type === 'quiz' ? 'Cuestionario' : content.type === 'exercises' ? 'Ejercicios' : ''}<br>
             <strong>Fecha de creación:</strong> ${new Date(content.createdAt).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}<br>
             <strong>Generado por:</strong> MentorIA con Gemini AI
           </div>
@@ -499,38 +499,28 @@ export default function DashboardPage() {
               </div>
 
               <div className="features-grid">
-                <div className="feature-card" onClick={() => setShowAIModal("summary")} style={{ cursor: "pointer" }}>
+                <div className="feature-card">
                   <div className="card-icon">
                     <i className="fas fa-file-contract"></i>
                   </div>
                   <h3>Resumen Inteligente</h3>
                   <p>Genera resúmenes automáticos de cualquier tema educativo</p>
-                  <button className="btn-primary" style={{ marginTop: '1rem' }}>
-                    <i className="fas fa-magic"></i> Crear Resumen
-                  </button>
                 </div>
 
-                <div className="feature-card featured" onClick={() => setShowAIModal("quiz")} style={{ cursor: "pointer" }}>
-                  <div className="featured-badge">Popular</div>
+                <div className="feature-card">
                   <div className="card-icon">
                     <i className="fas fa-question-circle"></i>
                   </div>
                   <h3>Cuestionario Adaptativo</h3>
                   <p>Crea quizzes que se ajustan al nivel de cada estudiante</p>
-                  <button className="btn-primary" style={{ marginTop: '1rem' }}>
-                    <i className="fas fa-magic"></i> Crear Quiz
-                  </button>
                 </div>
 
-                <div className="feature-card" onClick={() => setShowAIModal("material")} style={{ cursor: "pointer" }}>
+                <div className="feature-card">
                   <div className="card-icon">
-                    <i className="fas fa-chalkboard"></i>
+                    <i className="fas fa-pen-to-square"></i>
                   </div>
-                  <h3>Material Didáctico</h3>
-                  <p>Fichas educativas y presentaciones personalizadas</p>
-                  <button className="btn-primary" style={{ marginTop: '1rem' }}>
-                    <i className="fas fa-magic"></i> Crear Material
-                  </button>
+                  <h3>Ejercicios Prácticos</h3>
+                  <p>Genera ejercicios personalizados para practicar</p>
                 </div>
               </div>
 
@@ -631,7 +621,6 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="generation-card featured" onClick={() => setShowAIModal("quiz")} style={{ cursor: "pointer" }}>
-                  <div className="featured-badge">Más Usado</div>
                   <div className="generation-header">
                     <i className="fas fa-question-circle"></i>
                     <h3>Cuestionario Adaptativo</h3>
@@ -647,10 +636,10 @@ export default function DashboardPage() {
                   </button>
                 </div>
 
-                <div className="generation-card" onClick={() => setShowAIModal("material")} style={{ cursor: "pointer" }}>
+                <div className="generation-card" onClick={() => setShowAIModal("exercises")} style={{ cursor: "pointer" }}>
                   <div className="generation-header">
                     <i className="fas fa-chalkboard-teacher"></i>
-                    <h3>Material Didáctico</h3>
+                    <h3>Ejercicios Prácticos</h3>
                   </div>
                   <p>Crea fichas, presentaciones y recursos visuales educativos</p>
                   <ul className="feature-list">
@@ -659,7 +648,7 @@ export default function DashboardPage() {
                     <li><i className="fas fa-check"></i> Listo para usar en clase</li>
                   </ul>
                   <button className="btn-primary full">
-                    <i className="fas fa-wand-magic-sparkles"></i> Crear Material
+                    <i className="fas fa-wand-magic-sparkles"></i> Crear Ejercicios
                   </button>
                 </div>
               </div>
@@ -731,7 +720,7 @@ export default function DashboardPage() {
                       style={{ cursor: 'pointer', transition: 'all 0.2s ease' }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.transform = 'translateX(5px)';
-                        e.currentTarget.style.boxShadow = '0 4px 20px rgba(102, 126, 234, 0.15)';
+                        e.currentTarget.style.boxShadow = '0 4px 20px rgba(250, 248, 248, 0.15)';
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.transform = 'translateX(0)';
@@ -1201,7 +1190,6 @@ export default function DashboardPage() {
                     showAIModal === "summary" ? "fa-file-alt" : 
                     showAIModal === "quiz" ? "fa-question-circle" : 
                     showAIModal === "exercises" ? "fa-tasks" :
-                    showAIModal === "explanation" ? "fa-lightbulb" :
                     "fa-chalkboard-teacher"
                   }`} style={{ fontSize: "1.5rem", color: "white" }}></i>
                 </div>
@@ -1268,33 +1256,339 @@ export default function DashboardPage() {
       )}
 
       <style jsx global>{`
-        @keyframes modalSlideIn {
-          from {
-            opacity: 0;
-            transform: scale(0.9) translateY(20px);
+        /* Navbar SaaS */
+        .navbar {
+          background: linear-gradient(90deg, #f8fafc 0%, #eef2ff 100%);
+          box-shadow: 0 2px 12px rgba(102,126,234,0.07);
+          border-bottom: 1px solid #e5e7eb;
+          padding: 0.5rem 0;
+        }
+        .nav-container {
+          max-width: 1400px;
+          margin: 0 auto;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0.5rem 2rem;
+        }
+        .logo {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: #4f46e5;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+        .nav-menu ul {
+          display: flex;
+          gap: 1.5rem;
+        }
+        .nav-tab {
+          background: none;
+          border: none;
+          font-size: 1rem;
+          font-weight: 600;
+          color: #6366f1;
+          padding: 0.75rem 1.5rem;
+          border-radius: 8px;
+          transition: background 0.2s, color 0.2s;
+        }
+        .nav-tab.active {
+          background: linear-gradient(90deg, rgba(99,102,241,0.18) 0%, rgba(118,75,162,0.18) 100%);
+          color: #4f46e5;
+          box-shadow: 0 2px 8px rgba(102,126,234,0.10);
+          backdrop-filter: blur(2px);
+          font-weight: 700;
+        }
+        .header-search-container {
+          background: #fff;
+          border-radius: 8px;
+          box-shadow: 0 2px 8px rgba(102,126,234,0.07);
+          padding: 0.25rem 1rem;
+          display: flex;
+          align-items: center;
+          position: relative;
+          max-width: 350px;
+        }
+        .header-search-icon {
+          position: absolute;
+          left: 1rem;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #6366f1;
+          font-size: 1.2rem;
+          opacity: 0.7;
+          pointer-events: none;
+        }
+        .header-search-input {
+          border: none;
+          outline: none;
+          background: transparent;
+          font-size: 1rem;
+          padding: 0.5rem 0.5rem 0.5rem 2.2rem;
+          width: 100%;
+        }
+        .user-avatar {
+          background: linear-gradient(135deg, #6366f1 0%, #764ba2 100%);
+          color: #fff;
+          font-weight: 700;
+          border-radius: 50%;
+          width: 36px;
+          height: 36px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.1rem;
+          box-shadow: 0 2px 8px rgba(102,126,234,0.10);
+        }
+        .user-dropdown-menu {
+          position: absolute;
+          right: 0;
+          top: 48px;
+          background: #fff;
+          border-radius: 12px;
+          box-shadow: 0 8px 32px rgba(102,126,234,0.13);
+          min-width: 220px;
+          z-index: 10;
+          padding: 0.5rem 0;
+        }
+        .dropdown-header {
+          padding: 0.75rem 1.25rem;
+          font-weight: 600;
+          color: #6366f1;
+        }
+        .dropdown-email {
+          font-size: 0.95rem;
+          color: #6366f1;
+        }
+        .dropdown-divider {
+          height: 1px;
+          background: #e5e7eb;
+          margin: 0.25rem 0;
+        }
+        .dropdown-item {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          padding: 0.75rem 1.25rem;
+          color: #374151;
+          font-size: 1rem;
+          background: none;
+          border: none;
+          width: 100%;
+          cursor: pointer;
+          transition: background 0.18s;
+        }
+        .dropdown-item:hover {
+          background: #f3f4f6;
+        }
+        /* Dashboard Header */
+        .dashboard-header {
+          background: linear-gradient(90deg, #eef2ff 0%, #f8fafc 100%);
+          padding: 2.5rem 2rem 1.5rem 2rem;
+          border-bottom: 1px solid #e5e7eb;
+        }
+        .welcome-section {
+          max-width: 900px;
+          margin: 0 auto;
+        }
+        .welcome-section h1 {
+          font-size: 2.2rem;
+          font-weight: 800;
+          color: #4f46e5;
+          margin-bottom: 0.5rem;
+        }
+        .bright-text {
+          color: #4f46e5 !important;
+          font-weight: 800;
+        }
+        .welcome-section p {
+          font-size: 1.15rem;
+          color: #6366f1;
+          margin-bottom: 0.5rem;
+        }
+        /* Dashboard Content */
+        .dashboard-container {
+          max-width: 1400px;
+          margin: 0 auto;
+          padding: 2rem 2rem 2rem 2rem;
+        }
+        .section-header {
+          margin-bottom: 2.5rem;
+        }
+        .section-header h2 {
+          font-size: 1.6rem;
+          font-weight: 700;
+          color: #4f46e5;
+          margin-bottom: 0.25rem;
+        }
+        .section-header p {
+          font-size: 1.05rem;
+          color: #6366f1;
+        }
+        /* Cards y grids */
+        .features-grid, .generation-options {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+          gap: 2rem;
+          margin-bottom: 2.5rem;
+        }
+        .feature-card, .generation-card {
+          background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+          border-radius: 18px;
+          box-shadow: 0 8px 32px rgba(102,126,234,0.09);
+          padding: 2rem 1.5rem 1.5rem 1.5rem;
+          transition: box-shadow 0.25s, transform 0.25s;
+          position: relative;
+        }
+        .feature-card:hover, .generation-card:hover {
+          box-shadow: 0 16px 48px rgba(102,126,234,0.16);
+          transform: translateY(-6px) scale(1.02);
+        }
+        .featured-badge {
+          position: absolute;
+          top: 1.2rem;
+          right: 1.2rem;
+          background: linear-gradient(90deg, #6366f1 0%, #764ba2 100%);
+          color: #fff;
+          font-size: 0.85rem;
+          font-weight: 700;
+          padding: 0.35rem 1rem;
+          border-radius: 8px;
+          box-shadow: 0 2px 8px rgba(102,126,234,0.13);
+        }
+        .card-icon, .generation-header i {
+          background: linear-gradient(135deg, #6366f1 0%, #764ba2 100%);
+          color: #fff;
+          border-radius: 12px;
+          width: 56px;
+          height: 56px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 2rem;
+          margin-bottom: 1.2rem;
+          box-shadow: 0 2px 8px rgba(102,126,234,0.10);
+        }
+        .feature-card h3, .generation-header h3 {
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: #374151;
+          margin-bottom: 0.5rem;
+          margin-left: 0.5rem;
+          display: inline-block;
+        }
+        .feature-card p, .generation-card p {
+          font-size: 1rem;
+          color: #6b7280;
+          margin-bottom: 1rem;
+        }
+        .btn-primary, .btn-secondary {
+          background: linear-gradient(90deg, #6366f1 0%, #764ba2 100%);
+          color: #fff;
+          font-weight: 700;
+          border: none;
+          border-radius: 8px;
+          padding: 0.7rem 1.5rem;
+          font-size: 1rem;
+          box-shadow: 0 2px 8px rgba(102,126,234,0.10);
+          transition: background 0.18s, transform 0.18s;
+        }
+        .btn-primary:hover, .btn-secondary:hover {
+          background: linear-gradient(90deg, #764ba2 0%, #6366f1 100%);
+          transform: scale(1.04);
+        }
+        .btn-secondary {
+          background: #eef2ff;
+          color: #6366f1;
+        }
+        .btn-secondary:hover {
+          background: #6366f1;
+          color: #fff;
+        }
+        /* Filtros y listas */
+        .content-filters {
+          display: flex;
+          gap: 1rem;
+          margin-bottom: 2rem;
+        }
+        .filter-btn {
+          background: #eef2ff;
+          color: #6366f1;
+          border: none;
+          border-radius: 8px;
+          padding: 0.5rem 1rem;
+          font-size: 0.95rem;
+          font-weight: 600;
+          transition: background 0.18s, color 0.18s;
+        }
+        .filter-btn.active, .filter-btn:hover {
+          background: #6366f1;
+          color: #fff;
+        }
+        /* Modales y detalles */
+        .content-item, .content-item.detailed {
+          background: #fff;
+          border-radius: 12px;
+          box-shadow: 0 2px 8px rgba(102,126,234,0.07);
+          padding: 1.2rem 1rem;
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          transition: box-shadow 0.18s, transform 0.18s;
+        }
+        .content-item:hover, .content-item.detailed:hover {
+          box-shadow: 0 8px 32px rgba(102,126,234,0.13);
+          transform: translateY(-4px) scale(1.02);
+        }
+        .content-icon {
+          background: linear-gradient(135deg, #6366f1 0%, #764ba2 100%);
+          color: #fff;
+          border-radius: 10px;
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.2rem;
+        }
+        .content-info {
+          flex: 1;
+        }
+        .content-title {
+          font-size: 1.05rem;
+          font-weight: 700;
+          color: #374151;
+          margin-bottom: 0.2rem;
+        }
+        .content-date {
+          font-size: 0.95rem;
+          color: #6b7280;
+        }
+        .content-actions {
+          display: flex;
+          gap: 0.5rem;
+        }
+        /* Responsive */
+        @media (max-width: 768px) {
+          .nav-container, .dashboard-container, .dashboard-header {
+            padding: 1rem;
           }
-          to {
-            opacity: 1;
-            transform: scale(1) translateY(0);
+          .features-grid, .generation-options {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+          }
+          .content-filters {
+            flex-direction: column;
+            gap: 0.5rem;
           }
         }
-        
-        .feature-card {
-          transition: all 0.3s ease;
-        }
-        
-        .feature-card:hover {
-          transform: translateY(-8px);
-          box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
-        }
-        
-        .generation-card {
-          transition: all 0.3s ease;
-        }
-        
-        .generation-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 15px 30px rgba(102, 126, 234, 0.15);
+
+        /* Eliminar borde especial, todos iguales */
+        .features-grid .feature-card.featured,
+        .generation-options .generation-card.featured {
+          border: none !important;
+          box-shadow: 0 8px 32px rgba(102,126,234,0.09);
         }
       `}</style>
     </>
