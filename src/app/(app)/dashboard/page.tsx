@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
 import AIGenerator from "../../../components/ai/AIGenerator";
+import AIChat from "../../../components/ai/AIChat";
 import { Quiz } from "../../../types/ai";
 
 // Tipo de contenido para el modal
@@ -368,22 +369,24 @@ export default function DashboardPage() {
       </header>
 
       <main className="dashboard-container">
-        {/* Header del Dashboard */}
-        <div className="dashboard-header">
-          <div className="welcome-section">
-            <h1>
-              ¡Bienvenido de vuelta,{" "}
-              <span className="bright-text">
-                {user?.user_metadata?.full_name || "Educador"}
-              </span>
-              !
-            </h1>
-            <p>Continúa transformando la educación con inteligencia artificial</p>
+        {/* Header del Dashboard - Solo visible en Inicio */}
+        {activeTab === "inicio" && (
+          <div className="dashboard-header">
+            <div className="welcome-section">
+              <h1>
+                ¡Bienvenido de vuelta,{" "}
+                <span className="bright-text">
+                  {user?.user_metadata?.full_name || "Educador"}
+                </span>
+                !
+              </h1>
+              <p>Continúa transformando la educación con inteligencia artificial</p>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Contenido Principal del Dashboard */}
-        <div className="dashboard-content">
+        <div className="dashboard-content" style={activeTab !== "inicio" ? { paddingTop: '4rem' } : {}}>
 
           {/* Sección de Generación Rápida */}
           {activeTab === "inicio" && shouldShowInitTab && (
@@ -551,7 +554,6 @@ export default function DashboardPage() {
                           <i className={`fas ${
                             content.type === 'quiz' ? 'fa-question-circle' :
                             content.type === 'summary' ? 'fa-file-alt' :
-                            content.type === 'material' ? 'fa-chalkboard' :
                             content.type === 'exercises' ? 'fa-tasks' :
                             'fa-lightbulb'
                           }`}></i>
@@ -597,59 +599,164 @@ export default function DashboardPage() {
 
           {/* Sección de Generación de Contenido */}
           {activeTab === "generar" && shouldShowGenTab && (
-            <div className="tab-content">
-              <div className="section-header">
-                <h2>Generar Nuevo Contenido</h2>
-                <p>Selecciona el tipo de contenido educativo que deseas crear</p>
-              </div>
-
-              <div className="generation-options">
-                <div className="generation-card" onClick={() => setShowAIModal("summary")} style={{ cursor: "pointer" }}>
-                  <div className="generation-header">
-                    <i className="fas fa-file-contract"></i>
-                    <h3>Resumen Inteligente</h3>
+            <div className="tab-content" style={{ maxWidth: '100%', padding: 0 }}>
+              <div style={{
+                width: '100%',
+                maxWidth: '1400px',
+                margin: '0 auto',
+                minHeight: 'calc(100vh - 180px)',
+                background: 'white',
+                borderRadius: '24px',
+                padding: '0',
+                boxShadow: '0 8px 32px rgba(102,126,234,0.15)',
+                border: '1px solid rgba(102,126,234,0.1)',
+                overflow: 'hidden'
+              }}>
+                {/* Decorative Header */}
+                <div style={{
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  padding: '2rem 2.5rem',
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}>
+                  {/* Decorative circles */}
+                  <div style={{
+                    position: 'absolute',
+                    top: '-30px',
+                    right: '-30px',
+                    width: '150px',
+                    height: '150px',
+                    background: 'rgba(255,255,255,0.1)',
+                    borderRadius: '50%'
+                  }}></div>
+                  <div style={{
+                    position: 'absolute',
+                    bottom: '-50px',
+                    left: '-20px',
+                    width: '120px',
+                    height: '120px',
+                    background: 'rgba(255,255,255,0.08)',
+                    borderRadius: '50%'
+                  }}></div>
+                  
+                  <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '1rem',
+                    position: 'relative',
+                    zIndex: 1
+                  }}>
+                    <div style={{
+                      width: '60px',
+                      height: '60px',
+                      background: 'rgba(255,255,255,0.2)',
+                      backdropFilter: 'blur(10px)',
+                      borderRadius: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '1.8rem',
+                      color: 'white'
+                    }}>
+                      <i className="fas fa-robot"></i>
+                    </div>
+                    <div style={{ color: 'white' }}>
+                      <h3 style={{ 
+                        margin: 0, 
+                        fontSize: '1.5rem', 
+                        fontWeight: 700,
+                        color: 'white'
+                      }}>
+                        Asistente Educativo IA
+                      </h3>
+                      <p style={{ 
+                        margin: '0.25rem 0 0 0', 
+                        fontSize: '1rem', 
+                        opacity: 0.95,
+                        color: 'white'
+                      }}>
+                        Crea resúmenes, cuestionarios y ejercicios personalizados
+                      </p>
+                    </div>
                   </div>
-                  <p>Transforma textos largos en resúmenes concisos y educativos</p>
-                  <ul className="feature-list">
-                    <li><i className="fas fa-check"></i> Análisis semántico avanzado</li>
-                    <li><i className="fas fa-check"></i> Adaptado al nivel educativo</li>
-                    <li><i className="fas fa-check"></i> Puntos clave destacados</li>
-                  </ul>
-                  <button className="btn-primary full">
-                    <i className="fas fa-wand-magic-sparkles"></i> Crear Resumen
-                  </button>
                 </div>
 
-                <div className="generation-card featured" onClick={() => setShowAIModal("quiz")} style={{ cursor: "pointer" }}>
-                  <div className="generation-header">
-                    <i className="fas fa-question-circle"></i>
-                    <h3>Cuestionario Adaptativo</h3>
-                  </div>
-                  <p>Genera evaluaciones que se ajustan al progreso del estudiante</p>
-                  <ul className="feature-list">
-                    <li><i className="fas fa-check"></i> Dificultad progresiva</li>
-                    <li><i className="fas fa-check"></i> Retroalimentación inmediata</li>
-                    <li><i className="fas fa-check"></i> Múltiples formatos de pregunta</li>
-                  </ul>
-                  <button className="btn-primary full">
-                    <i className="fas fa-wand-magic-sparkles"></i> Crear Cuestionario
-                  </button>
+                {/* Chat Container */}
+                <div style={{
+                  padding: '2rem 2.5rem',
+                  background: 'linear-gradient(180deg, #fafbff 0%, #ffffff 100%)'
+                }}>
+                  <AIChat 
+                    placeholder="Ej: Necesito un resumen sobre la Revolución Industrial..." 
+                  />
                 </div>
 
-                <div className="generation-card" onClick={() => setShowAIModal("exercises")} style={{ cursor: "pointer" }}>
-                  <div className="generation-header">
-                    <i className="fas fa-chalkboard-teacher"></i>
-                    <h3>Ejercicios Prácticos</h3>
+                {/* Info Footer */}
+                <div style={{
+                  padding: '1.5rem 2.5rem',
+                  background: '#f8fafc',
+                  borderTop: '1px solid #e5e7eb',
+                  display: 'flex',
+                  gap: '2rem',
+                  flexWrap: 'wrap'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <div style={{
+                      width: '40px',
+                      height: '40px',
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      borderRadius: '10px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'white',
+                      fontSize: '1rem'
+                    }}>
+                      <i className="fas fa-file-alt"></i>
+                    </div>
+                    <div>
+                      <p style={{ margin: 0, fontWeight: 600, color: '#374151', fontSize: '0.9rem' }}>Resúmenes</p>
+                      <p style={{ margin: 0, color: '#6b7280', fontSize: '0.8rem' }}>Concisos y educativos</p>
+                    </div>
                   </div>
-                  <p>Crea fichas, presentaciones y recursos visuales educativos</p>
-                  <ul className="feature-list">
-                    <li><i className="fas fa-check"></i> Diseños profesionales</li>
-                    <li><i className="fas fa-check"></i> Contenido estructurado</li>
-                    <li><i className="fas fa-check"></i> Listo para usar en clase</li>
-                  </ul>
-                  <button className="btn-primary full">
-                    <i className="fas fa-wand-magic-sparkles"></i> Crear Ejercicios
-                  </button>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <div style={{
+                      width: '40px',
+                      height: '40px',
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      borderRadius: '10px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'white',
+                      fontSize: '1rem'
+                    }}>
+                      <i className="fas fa-question-circle"></i>
+                    </div>
+                    <div>
+                      <p style={{ margin: 0, fontWeight: 600, color: '#374151', fontSize: '0.9rem' }}>Cuestionarios</p>
+                      <p style={{ margin: 0, color: '#6b7280', fontSize: '0.8rem' }}>Adaptativos e interactivos</p>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <div style={{
+                      width: '40px',
+                      height: '40px',
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      borderRadius: '10px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'white',
+                      fontSize: '1rem'
+                    }}>
+                      <i className="fas fa-pen-to-square"></i>
+                    </div>
+                    <div>
+                      <p style={{ margin: 0, fontWeight: 600, color: '#374151', fontSize: '0.9rem' }}>Ejercicios</p>
+                      <p style={{ margin: 0, color: '#6b7280', fontSize: '0.8rem' }}>Prácticos y personalizados</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -683,10 +790,10 @@ export default function DashboardPage() {
                   Cuestionarios ({savedContents.filter(c => c.type === "quiz").length})
                 </button>
                 <button 
-                  className={`filter-btn ${contentFilter === "material" ? "active" : ""}`}
-                  onClick={() => setContentFilter("material")}
+                  className={`filter-btn ${contentFilter === "exercises" ? "active" : ""}`}
+                  onClick={() => setContentFilter("exercises")}
                 >
-                  Materiales ({savedContents.filter(c => c.type === "material").length})
+                  Ejercicios ({savedContents.filter(c => c.type === "exercises").length})
                 </button>
               </div>
 
@@ -700,15 +807,12 @@ export default function DashboardPage() {
                 }}>
                   <i className="fas fa-box-open" style={{ fontSize: '3rem', marginBottom: '1rem', color: '#cbd5e1' }}></i>
                   <h3 style={{ color: '#374151', marginBottom: '0.5rem' }}>No hay contenidos</h3>
-                  <p style={{ marginBottom: '1.5rem' }}>
+                  <p style={{ marginBottom: 0 }}>
                     {contentFilter === "all" 
                       ? "Aún no has generado ningún contenido. ¡Empieza creando tu primer resumen o quiz!"
-                      : `No tienes ${contentFilter === "summary" ? "resúmenes" : contentFilter === "quiz" ? "cuestionarios" : "materiales"} guardados.`
+                      : `No tienes ${contentFilter === "summary" ? "resúmenes" : contentFilter === "quiz" ? "cuestionarios" : "ejercicios"} guardados.`
                     }
                   </p>
-                  <button className="btn-primary" onClick={() => setShowAIModal("summary")}>
-                    <i className="fas fa-magic"></i> Generar Contenido
-                  </button>
                 </div>
               ) : (
                 <div className="content-list">
@@ -731,7 +835,6 @@ export default function DashboardPage() {
                         <i className={`fas ${
                           content.type === 'quiz' ? 'fa-question-circle' :
                           content.type === 'summary' ? 'fa-file-alt' :
-                          content.type === 'material' ? 'fa-chalkboard' :
                           content.type === 'exercises' ? 'fa-tasks' :
                           'fa-lightbulb'
                         }`}></i>
@@ -956,7 +1059,6 @@ export default function DashboardPage() {
                   <i className={`fas ${
                     viewingContent.type === 'quiz' ? 'fa-question-circle' :
                     viewingContent.type === 'summary' ? 'fa-file-alt' :
-                    viewingContent.type === 'material' ? 'fa-chalkboard' :
                     viewingContent.type === 'exercises' ? 'fa-tasks' :
                     'fa-lightbulb'
                   }`} style={{ fontSize: "1.5rem", color: "white" }}></i>
@@ -968,8 +1070,7 @@ export default function DashboardPage() {
                   <p style={{ color: "rgba(255,255,255,0.8)", margin: 0, fontSize: "0.85rem" }}>
                     {viewingContent.type === 'summary' ? 'Resumen' : 
                      viewingContent.type === 'quiz' ? 'Cuestionario' : 
-                     viewingContent.type === 'material' ? 'Material Didáctico' :
-                     viewingContent.type === 'exercises' ? 'Ejercicios' : 'Explicación'} • 
+                     viewingContent.type === 'exercises' ? 'Ejercicios' : 'Contenido'} • 
                     {new Date(viewingContent.createdAt).toLocaleDateString('es-ES')}
                   </p>
                 </div>
@@ -1189,16 +1290,13 @@ export default function DashboardPage() {
                   <i className={`fas ${
                     showAIModal === "summary" ? "fa-file-alt" : 
                     showAIModal === "quiz" ? "fa-question-circle" : 
-                    showAIModal === "exercises" ? "fa-tasks" :
-                    "fa-chalkboard-teacher"
+                    "fa-tasks"
                   }`} style={{ fontSize: "1.5rem", color: "white" }}></i>
                 </div>
                 <div>
                   <h2 style={{ color: "white", margin: 0, fontSize: "1.5rem" }}>
                     {showAIModal === "summary" && "Generar Resumen Inteligente"}
                     {showAIModal === "quiz" && "Crear Cuestionario Adaptativo"}
-                    {showAIModal === "material" && "Crear Material Didáctico"}
-                    {showAIModal === "explanation" && "Generar Explicación"}
                     {showAIModal === "exercises" && "Crear Ejercicios"}
                   </h2>
                   <p style={{ color: "rgba(255,255,255,0.8)", margin: 0, fontSize: "0.9rem" }}>
