@@ -60,9 +60,9 @@ export default function HomePage() {
   };
 
   return (
-    <>
+    <div suppressHydrationWarning>
       {/* Enlace de accesibilidad */}
-      <a href="#main-content" className="skip-to-content">
+      <a href="#main-content" className="skip-to-content" suppressHydrationWarning>
         {t('accessibility.skip')}
       </a>
 
@@ -530,27 +530,6 @@ export default function HomePage() {
         </div>
       )}
 
-      <style jsx global>{`
-        @keyframes modalSlideIn {
-          from {
-            opacity: 0;
-            transform: scale(0.9) translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-          }
-        }
-        
-        .feature-card {
-          transition: all 0.3s ease;
-        }
-        
-        .feature-card:hover {
-          transform: translateY(-8px);
-          box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
-        }
-      `}</style>
-    </>
+    </div>
   );
 }

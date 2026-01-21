@@ -11,7 +11,7 @@ const languages = {
 };
 
 export default function LanguageSelector() {
-  const { locale, setLocale } = useLanguage();
+  const { locale, setLocale, isHydrated } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -27,7 +27,9 @@ export default function LanguageSelector() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const currentLang = languages[locale as keyof typeof languages];
+  // Usar siempre 'es' en el servidor y durante la hidratación inicial
+  const effectiveLocale = isHydrated ? locale : 'es';
+  const currentLang = languages[effectiveLocale as keyof typeof languages];
 
   const handleLanguageChange = (newLocale: string) => {
     setLocale(newLocale as 'es' | 'en' | 'fr');
@@ -35,15 +37,16 @@ export default function LanguageSelector() {
   };
 
   return (
-    <div className="language-selector" ref={dropdownRef}>
+    <div className="language-selector" ref={dropdownRef} suppressHydrationWarning>
       <button
         className="lang-btn-main"
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Cambiar idioma"
         aria-expanded={isOpen}
+        suppressHydrationWarning
       >
-        <span className="lang-flag">{currentLang.flag}</span>
-        <span className="lang-code">{currentLang.short}</span>
+        <span className="lang-flag" suppressHydrationWarning>{currentLang.flag}</span>
+        <span className="lang-code" suppressHydrationWarning>{currentLang.short}</span>
         <i className={`fas fa-chevron-${isOpen ? 'up' : 'down'}`}></i>
       </button>
 
@@ -52,12 +55,12 @@ export default function LanguageSelector() {
           {Object.entries(languages).map(([code, lang]) => (
             <button
               key={code}
-              className={`lang-option ${locale === code ? 'active' : ''}`}
+              className={`lang-option ${effectiveLocale === code ? 'active' : ''}`}
               onClick={() => handleLanguageChange(code)}
             >
               <span className="lang-flag">{lang.flag}</span>
               <span className="lang-name">{lang.name}</span>
-              {locale === code && <i className="fas fa-check"></i>}
+              {effectiveLocale === code && <i className="fas fa-check"></i>}
             </button>
           ))}
         </div>

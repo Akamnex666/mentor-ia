@@ -11,21 +11,35 @@ interface LanguageContextType {
   locale: Locale;
   setLocale: (locale: Locale) => void;
   t: (key: string) => string;
+  isHydrated: boolean;
 }
 
 const translations = { es, en, fr };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>('es');
-
-  useEffect(() => {
-    // Load saved language from localStorage
+// Función para obtener el idioma inicial de forma segura
+function getInitialLocale(): Locale {
+  if (typeof window !== 'undefined') {
     const savedLocale = localStorage.getItem('language') as Locale;
     if (savedLocale && ['es', 'en', 'fr'].includes(savedLocale)) {
-      setLocaleState(savedLocale);
+      return savedLocale;
     }
+  }
+  return 'es';
+}
+
+export function LanguageProvider({ children }: { children: ReactNode }) {
+  // Usar 'es' como valor por defecto para que coincida con el servidor
+  const [locale, setLocaleState] = useState<Locale>('es');
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    // Solo después de la hidratación, sincronizar con localStorage
+    const savedLocale = getInitialLocale();
+    setLocaleState(savedLocale);
+    document.documentElement.lang = savedLocale;
+    setIsHydrated(true);
   }, []);
 
   const setLocale = (newLocale: Locale) => {
@@ -37,11 +51,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   const t = (key: string): string => {
     const keys = key.split('.');
-    let value: any = translations[locale];
+    let value: unknown = translations[locale];
 
     for (const k of keys) {
       if (value && typeof value === 'object') {
-        value = value[k];
+        value = (value as Record<string, unknown>)[k];
       } else {
         return key; // Return key if translation not found
       }
@@ -51,7 +65,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <LanguageContext.Provider value={{ locale, setLocale, t }}>
+    <LanguageContext.Provider value={{ locale, setLocale, t, isHydrated }}>
       {children}
     </LanguageContext.Provider>
   );

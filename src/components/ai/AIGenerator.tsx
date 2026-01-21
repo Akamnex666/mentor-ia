@@ -465,7 +465,12 @@ function QuizQuestionCard({ question, index }: { question: QuizQuestion; index: 
     hard: { bg: "#fecaca", text: "#dc2626", label: "Difícil" },
   };
 
-  const config = difficultyConfig[question.difficulty];
+  // Asegurar que la dificultad sea válida, usar 'medium' como fallback
+  const difficulty = (question.difficulty && difficultyConfig[question.difficulty as keyof typeof difficultyConfig]) 
+    ? question.difficulty as keyof typeof difficultyConfig
+    : 'medium';
+  
+  const config = difficultyConfig[difficulty];
   const isCorrect = selectedAnswer === question.correctAnswer;
 
   return (
