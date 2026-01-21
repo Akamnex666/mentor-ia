@@ -44,26 +44,6 @@ export default function AIChat({
 
   return (
     <div className={`ai-chat ${className}`}>
-      <div className="chat-header">
-        <div className="chat-title">
-          <div className="avatar ai">
-            <i className="fas fa-robot"></i>
-          </div>
-          <div>
-            <h3>MentorIA</h3>
-            <span className="status">
-              <span className="status-dot"></span>
-              {isLoading ? "Escribiendo..." : "En línea"}
-            </span>
-          </div>
-        </div>
-        {messages.length > 0 && (
-          <button className="btn-clear" onClick={clearChat} title="Limpiar chat">
-            <i className="fas fa-trash"></i>
-          </button>
-        )}
-      </div>
-
       <div className="chat-messages">
         {messages.length === 0 ? (
           <div className="chat-welcome">
