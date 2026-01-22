@@ -90,12 +90,19 @@ export default function DashboardPage() {
     localStorage.setItem(`mentoria_contents_${user.id}`, JSON.stringify(updated));
   };
 
-  // Eliminar contenido
+  // Eliminar contenido individual
   const deleteContent = (id: string) => {
     if (!user) return;
     const updated = savedContents.filter(c => c.id !== id);
     setSavedContents(updated);
     localStorage.setItem(`mentoria_contents_${user.id}`, JSON.stringify(updated));
+  };
+
+  // Eliminar todos los contenidos
+  const deleteAllContents = () => {
+    if (!user) return;
+    setSavedContents([]);
+    localStorage.removeItem(`mentoria_contents_${user.id}`);
   };
 
   // Filtrar contenidos
@@ -688,6 +695,7 @@ export default function DashboardPage() {
                 }}>
                   <AIChat 
                     placeholder="Ej: Necesito un resumen sobre la Revolución Industrial..." 
+                    onSaveContent={saveContent}
                   />
                 </div>
               </div>
@@ -697,9 +705,26 @@ export default function DashboardPage() {
           {/* Sección de Mis Contenidos */}
           {activeTab === "contenidos" && shouldShowContenidosTab && (
             <div className="tab-content">
-              <div className="section-header">
-                <h2>Mis Contenidos Educativos</h2>
-                <p>Gestiona y organiza todo tu material creado con IA</p>
+
+              <div className="section-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
+                <div>
+                  <h2>Mis Contenidos Educativos</h2>
+                  <p>Gestiona y organiza todo tu material creado con IA</p>
+                </div>
+                {savedContents.length > 0 && (
+                  <button
+                    className="btn-secondary"
+                    style={{ color: '#ef4444', fontWeight: 500, border: '1px solid #ef4444', background: 'white', padding: '0.5rem 1rem', borderRadius: '8px', marginLeft: 'auto' }}
+                    onClick={() => {
+                      if (window.confirm('¿Estás seguro de que deseas eliminar todos los contenidos guardados? Esta acción no se puede deshacer.')) {
+                        deleteAllContents();
+                      }
+                    }}
+                    title="Eliminar todo"
+                  >
+                    <i className="fas fa-trash"></i> Eliminar todo
+                  </button>
+                )}
               </div>
 
               <div className="content-filters">

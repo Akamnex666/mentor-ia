@@ -5,26 +5,49 @@ import { useAIChat } from "../../features/ai";
 import { ChatMessage } from "../../types/ai";
 import "../../styles/globals.css";
 
+
 interface AIChatProps {
   className?: string;
   context?: string;
   placeholder?: string;
+  onSaveContent?: (type: string, title: string, content: string) => void;
 }
 
 export default function AIChat({ 
   className = "", 
   context,
-  placeholder = "Escribe tu pregunta..." 
+  placeholder = "Escribe tu pregunta...",
+  onSaveContent
 }: AIChatProps) {
+  const lastSavedId = useRef<string | null>(null);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   
   const { isLoading, error, messages, sendMessage, clearChat } = useAIChat();
 
+
+  // Guardar automáticamente el último mensaje de la IA
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    if (onSaveContent && messages.length > 1) {
+      const last = messages[messages.length - 1];
+      const prev = messages[messages.length - 2];
+      const lastId = last.timestamp?.toString() || last.content.slice(0, 40);
+      if (
+        last.role === "model" &&
+        prev.role === "user" &&
+        lastSavedId.current !== lastId
+      ) {
+        let type = "summary";
+        let title = prev.content.slice(0, 40) || "Contenido generado";
+        if (/cuestionario|quiz/i.test(prev.content)) type = "quiz";
+        if (/ejercicio/i.test(prev.content)) type = "exercises";
+        onSaveContent(type, title, last.content);
+        lastSavedId.current = lastId;
+      }
+    }
+  }, [messages, onSaveContent]);
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
