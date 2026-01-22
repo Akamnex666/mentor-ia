@@ -1085,26 +1085,7 @@ export default function DashboardPage() {
                 {generatingPDF ? 'Generando...' : 'Descargar PDF'}
               </button>
               
-              <button
-                onClick={() => generateImage(viewingContent)}
-                disabled={generatingImage}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                  padding: "0.6rem 1.2rem",
-                  background: generatingImage ? "#cbd5e1" : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "8px",
-                  cursor: generatingImage ? "not-allowed" : "pointer",
-                  fontWeight: 600,
-                  fontSize: "0.9rem"
-                }}
-              >
-                <i className={`fas ${generatingImage ? 'fa-spinner fa-spin' : 'fa-image'}`}></i>
-                {generatingImage ? 'Generando...' : 'Generar Infografía'}
-              </button>
+              {/* Botón de Generar Infografía eliminado por solicitud del usuario */}
 
               <button
                 onClick={() => navigator.clipboard.writeText(viewingContent.content)}
