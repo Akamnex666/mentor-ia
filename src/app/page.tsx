@@ -8,7 +8,7 @@ import AIGenerator from "../components/ai/AIGenerator";
 import "../styles/globals.css";
 
 // Tipo de contenido para el modal
-type AIModalType = "summary" | "quiz" | "material" | null;
+type AIModalType = "summary" | "quiz" | "exercises" | null;
 
 export default function HomePage() {
   const [activeFAQ, setActiveFAQ] = useState<number | null>(null);
@@ -62,7 +62,7 @@ export default function HomePage() {
   return (
     <div suppressHydrationWarning>
       {/* Enlace de accesibilidad */}
-      <a href="#main-content" className="skip-to-content">
+      <a href="#main-content" className="skip-to-content" suppressHydrationWarning>
         {t('accessibility.skip')}
       </a>
 
@@ -204,7 +204,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="feature-card" onClick={() => setShowAIModal("material")} style={{ cursor: "pointer" }}>
+            <div className="feature-card" onClick={() => setShowAIModal("exercises")} style={{ cursor: "pointer" }}>
               <div className="card-icon">
                 <i className="fas fa-chalkboard-teacher"></i>
               </div>
@@ -480,7 +480,7 @@ export default function HomePage() {
                   <h2 style={{ color: "white", margin: 0, fontSize: "1.5rem" }}>
                     {showAIModal === "summary" && "Generar Resumen Inteligente"}
                     {showAIModal === "quiz" && "Crear Cuestionario Adaptativo"}
-                    {showAIModal === "material" && "Crear Material Didáctico"}
+                    {showAIModal === "exercises" && "Crear Material Didáctico"}
                   </h2>
                   <p style={{ color: "rgba(255,255,255,0.8)", margin: 0, fontSize: "0.9rem" }}>
                     Potenciado por Gemini AI
@@ -517,7 +517,7 @@ export default function HomePage() {
               overflowY: "auto" 
             }}>
               <AIGenerator 
-                defaultType={showAIModal}
+                defaultType={showAIModal === null ? undefined : showAIModal}
                 onContentGenerated={(content, type) => {
                   console.log("Contenido generado:", type);
                 }}
@@ -530,6 +530,7 @@ export default function HomePage() {
         </div>
       )}
 
+<<<<<<< HEAD
       <style jsx global>{`
         @keyframes modalSlideIn {
           from {
@@ -551,6 +552,8 @@ export default function HomePage() {
           box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
         }
       `}</style>
+=======
+>>>>>>> 12001704997eec333247334f95e758b9f14e2fa6
     </div>
   );
 }

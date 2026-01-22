@@ -8,7 +8,7 @@ interface AIGeneratorProps {
   onContentGenerated?: (content: string, type: AIContentType) => void;
   onQuizGenerated?: (quiz: Quiz) => void;
   className?: string;
-  defaultType?: "summary" | "quiz" | "material" | "explanation" | "exercises";
+  defaultType?: "summary" | "quiz" | "exercises";
 }
 
 export default function AIGenerator({ 
@@ -36,8 +36,6 @@ export default function AIGenerator({
   const contentTypes = [
     { id: "summary" as const, label: "Resumen", icon: "fa-file-alt" },
     { id: "quiz" as const, label: "Cuestionario", icon: "fa-question-circle" },
-    { id: "material" as const, label: "Material", icon: "fa-book" },
-    { id: "explanation" as const, label: "Explicación", icon: "fa-lightbulb" },
     { id: "exercises" as const, label: "Ejercicios", icon: "fa-tasks" },
   ];
 
@@ -465,7 +463,12 @@ function QuizQuestionCard({ question, index }: { question: QuizQuestion; index: 
     hard: { bg: "#fecaca", text: "#dc2626", label: "Difícil" },
   };
 
-  const config = difficultyConfig[question.difficulty];
+  // Asegurar que la dificultad sea válida, usar 'medium' como fallback
+  const difficulty = (question.difficulty && difficultyConfig[question.difficulty as keyof typeof difficultyConfig]) 
+    ? question.difficulty as keyof typeof difficultyConfig
+    : 'medium';
+  
+  const config = difficultyConfig[difficulty];
   const isCorrect = selectedAnswer === question.correctAnswer;
 
   return (

@@ -55,13 +55,7 @@ export default function RootLayout({
             <AccessibilityMenu />
 
             <footer className="w-full border-t mt-8 p-4 text-sm text-center text-gray-600">
-              <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2">
-                <div>© {new Date().getFullYear()} MentorIA</div>
-                <div className="flex gap-4">
-                  <a href="/terms" className="underline">Términos de uso</a>
-                  <a href="/privacy" className="underline">Política de privacidad</a>
-                </div>
-              </div>
+              {/* Footer global sin copyright ni enlaces legales */}
             </footer>
           </ToastProvider>
         </LanguageProvider>
