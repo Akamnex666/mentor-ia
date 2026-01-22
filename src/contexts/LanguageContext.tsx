@@ -16,7 +16,7 @@ interface LanguageContextType {
 
 const translations = { es, en, fr };
 
-// Helper function to get initial locale synchronously
+// Función para obtener el idioma inicial de forma segura
 function getInitialLocale(): Locale {
   if (typeof window !== 'undefined') {
     const savedLocale = localStorage.getItem('language') as Locale;
@@ -29,31 +29,6 @@ function getInitialLocale(): Locale {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-<<<<<<< HEAD
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  // Always start with 'es' on server and initial client render to avoid hydration mismatch
-  const [locale, setLocaleState] = useState<Locale>('es');
-  const [isHydrated, setIsHydrated] = useState(false);
-
-  useEffect(() => {
-    // Only run on client after hydration is complete
-    const savedLocale = localStorage.getItem('language') as Locale;
-    if (savedLocale && ['es', 'en', 'fr'].includes(savedLocale)) {
-      setLocaleState(savedLocale);
-      document.documentElement.lang = savedLocale;
-    }
-=======
-// Función para obtener el idioma inicial de forma segura
-function getInitialLocale(): Locale {
-  if (typeof window !== 'undefined') {
-    const savedLocale = localStorage.getItem('language') as Locale;
-    if (savedLocale && ['es', 'en', 'fr'].includes(savedLocale)) {
-      return savedLocale;
-    }
-  }
-  return 'es';
-}
-
 export function LanguageProvider({ children }: { children: ReactNode }) {
   // Usar 'es' como valor por defecto para que coincida con el servidor
   const [locale, setLocaleState] = useState<Locale>('es');
@@ -64,7 +39,6 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     const savedLocale = getInitialLocale();
     setLocaleState(savedLocale);
     document.documentElement.lang = savedLocale;
->>>>>>> 12001704997eec333247334f95e758b9f14e2fa6
     setIsHydrated(true);
   }, []);
 

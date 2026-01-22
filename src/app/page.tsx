@@ -530,7 +530,6 @@ export default function HomePage() {
         </div>
       )}
 
-<<<<<<< HEAD
       <style jsx global>{`
         @keyframes modalSlideIn {
           from {
@@ -552,8 +551,6 @@ export default function HomePage() {
           box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
         }
       `}</style>
-=======
->>>>>>> 12001704997eec333247334f95e758b9f14e2fa6
     </div>
   );
 }
