@@ -41,11 +41,23 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-      setLoading(false);
-      if (user) {
-        loadSavedContents(user.id);
+      try {
+        const { data: { user }, error } = await supabase.auth.getUser();
+        setUser(user);
+        setLoading(false);
+        if (user) {
+          loadSavedContents(user.id);
+        } else {
+          // Si no hay usuario, redirigir al login
+          router.push("/login");
+        }
+        // Si hay error relacionado con refresh token, redirigir
+        if (error && error.message && error.message.toLowerCase().includes("refresh token")) {
+          router.push("/login");
+        }
+      } catch (err: any) {
+        // Si ocurre cualquier error, redirigir al login
+        router.push("/login");
       }
     };
     getUser();
@@ -58,7 +70,7 @@ export default function DashboardPage() {
 
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
-  }, []);
+  }, [router]);
 
   // Cargar contenidos guardados
   const loadSavedContents = (userId: string) => {
