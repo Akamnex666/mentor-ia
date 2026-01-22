@@ -60,7 +60,7 @@ export default function HomePage() {
   };
 
   return (
-    <>
+    <div suppressHydrationWarning>
       {/* Enlace de accesibilidad */}
       <a href="#main-content" className="skip-to-content">
         {t('accessibility.skip')}
@@ -551,6 +551,6 @@ export default function HomePage() {
           box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
         }
       `}</style>
-    </>
+    </div>
   );
 }
